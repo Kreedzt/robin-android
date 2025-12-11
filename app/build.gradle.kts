@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.robin_android"
+    namespace = "com.kreedzt.rwr"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.robin_android"
+        applicationId = "com.kreedzt.rwr"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -65,11 +65,15 @@ dependencies {
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // Gson for SharedPreferences serialization
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // HTTP Client
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")

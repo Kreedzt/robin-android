@@ -1,4 +1,4 @@
-package com.example.robin_android.ui
+package com.kreedzt.rwr.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,11 +16,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun ImagePreview(imageUrl: String, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val imageRequest = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .setHeader("Accept", "image/avif,image/webp,*/*")
+            .build()
+    }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -69,7 +77,7 @@ fun ImagePreview(imageUrl: String, onDismiss: () -> Unit) {
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 SubcomposeAsyncImage(
-                    model = imageUrl,
+                    model = imageRequest,
                     contentDescription = "图片预览",
                     modifier = Modifier
                         .fillMaxSize()

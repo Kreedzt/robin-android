@@ -1,4 +1,4 @@
-package com.example.robin_android.ui
+package com.kreedzt.rwr.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,11 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 
 @Composable
 fun MapImagePreview(
@@ -25,6 +27,13 @@ fun MapImagePreview(
     mapName: String,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val imageRequest = remember(mapImageUrl) {
+        ImageRequest.Builder(context)
+            .data(mapImageUrl)
+            .setHeader("Accept", "image/avif,image/webp,*/*")
+            .build()
+    }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -93,7 +102,7 @@ fun MapImagePreview(
                     // 图片内容
                     Box(modifier = Modifier.weight(1f)) {
                         SubcomposeAsyncImage(
-                            model = mapImageUrl,
+                            model = imageRequest,
                             contentDescription = "地图预览: $mapName",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit,

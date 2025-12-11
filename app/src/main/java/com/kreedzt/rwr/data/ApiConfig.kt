@@ -1,9 +1,6 @@
-package com.example.robin_android.data
+package com.kreedzt.rwr.data
 
 object ApiConfig {
-    // API 配置
-    const val BASE_URL = "https://api.example.com/"  // 替换为实际的 API 地址
-
     // 请求超时时间（秒）
     const val CONNECT_TIMEOUT = 30L
     const val READ_TIMEOUT = 30L

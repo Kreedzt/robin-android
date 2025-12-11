@@ -1,0 +1,112 @@
+<resources>
+    <string name="app_name">robin</string>
+
+    <!-- Main Screen -->
+    <string name="search_servers">搜索服务器</string>
+    <string name="search_placeholder">搜索服务器...</string>
+    <string name="loading_servers">加载服务器列表...</string>
+    <string name="searching">搜索中...</string>
+    <string name="no_servers">暂无服务器</string>
+    <string name="no_search_results">未找到匹配的服务器</string>
+    <string name="try_other_keywords">尝试其他关键词</string>
+    <string name="all_servers">所有服务器 (%d)</string>
+    <string name="search_results">搜索结果 (%d)</string>
+
+    
+    <!-- Map -->
+    <string name="map_name">地图名称</string>
+    <string name="unknown_map">未知地图</string>
+    <string name="view_map">查看地图</string>
+    <string name="no_map_image">暂无地图图片</string>
+    <string name="map_preview">地图预览: %s</string>
+    <string name="loading_map_image">加载地图图片中...</string>
+    <string name="map_image_load_failed">地图图片加载失败</string>
+
+    <!-- Server Description -->
+    <string name="server_description">服务器描述</string>
+    <string name="online_players">在线玩家 (%d)</string>
+    <string name="more_players">... 还有 %d 名玩家</string>
+
+    <!-- Server Status -->
+    <string name="empty_server">空服务器</string>
+    <string name="full_server">服务器已满</string>
+    <string name="server_available">可用</string>
+    <string name="percent_full">%d%% 已满</string>
+
+    <!-- Menu -->
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="language">语言</string>
+    <string name="api_region">API 区域</string>
+    <string name="api_china">中国大陆</string>
+    <string name="api_global">全球</string>
+    <string name="app_version">应用版本</string>
+    <string name="app_description">游戏服务器浏览器和管理工具</string>
+
+    <!-- Actions -->
+    <string name="close">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="save">保存</string>
+    <string name="refresh">刷新</string>
+    <string name="auto_refresh">自动刷新</string>
+    <string name="auto_refresh_countdown">自动刷新倒计时 %1$d 秒</string>
+    <string name="auto_refresh_enabled">自动刷新已开启（每5秒）</string>
+    <string name="auto_refresh_disabled">自动刷新已关闭</string>
+    <string name="last_updated">上次更新: %s</string>
+    <string name="refreshing_data">正在刷新数据...</string>
+    <string name="visit_server_website">访问服务器网站</string>
+
+    <!-- Theme -->
+    <string name="theme">主题</string>
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_dynamic">动态取色（Android 12+）</string>
+
+    <!-- First Launch -->
+    <string name="welcome_to_robin">欢迎使用 Robin</string>
+    <string name="first_launch_setup">初始设置</string>
+    <string name="first_launch_description">让我们根据您的偏好配置您的体验</string>
+    <string name="select_language">选择语言</string>
+    <string name="select_api_region">选择API区域</string>
+    <string name="api_china_description">为中国大陆用户优化</string>
+    <string name="api_global_description">推荐国际用户使用</string>
+    <string name="complete_setup">完成设置</string>
+    <string name="setup_complete">设置完成！</string>
+    <string name="setup_success_message">您的偏好设置已成功保存。</string>
+    <string name="continue_text">继续</string>
+    <string name="skip_setup">跳过</string>
+    <string name="later_text">稍后再说</string>
+
+    <!-- Errors -->
+    <string name="network_error">网络错误</string>
+    <string name="failed_to_load_servers">加载服务器失败</string>
+    <string name="failed_to_refresh_servers">刷新服务器失败</string>
+
+    <!-- Server Detail Panel -->
+    <string name="server_address">服务器地址</string>
+    <string name="game_version_detail">游戏版本</string>
+    <string name="update_time_detail">更新时间</string>
+    <string name="player_statistics">玩家统计</string>
+    <string name="current_players_detail">当前玩家: %d</string>
+    <string name="bots_detail">机器人: %d</string>
+    <string name="max_capacity_detail">最大容量: %d</string>
+    <string name="server_properties_detail">服务器属性</string>
+    <string name="dedicated_server_detail">专用服务器</string>
+    <string name="non_dedicated_server_detail">非专用服务器</string>
+    <string name="server_description_detail">服务器描述</string>
+    <string name="online_players_detail">在线玩家 (%d)</string>
+    <string name="more_players_detail">... 还有 %d 名玩家</string>
+    <string name="view_map_detail">查看地图</string>
+    <string name="no_map_image_detail">暂无地图图片</string>
+    <string name="visit_server_website_detail">访问服务器网站</string>
+
+    <!-- Quick Filters -->
+    <string name="app_quick_filters">快捷筛选</string>
+    <string name="app_filter_official_invasion">官方入侵</string>
+    <string name="app_filter_official_ww2_invasion">官方二战入侵</string>
+    <string name="app_filter_official_dominance">官方 PVP</string>
+    <string name="app_filter_official_mod_castling">官方 Mod Castling</string>
+    <string name="app_filter_official_mod_helldivers">官方 Mod 地狱潜兵</string>
+</resources>

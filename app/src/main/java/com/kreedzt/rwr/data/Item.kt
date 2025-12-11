@@ -1,4 +1,4 @@
-package com.example.robin_android.data
+package com.kreedzt.rwr.data
 
 import kotlinx.serialization.Serializable
 

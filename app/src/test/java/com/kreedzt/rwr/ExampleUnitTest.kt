@@ -1,4 +1,4 @@
-package com.example.robin_android
+package com.kreedzt.rwr
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.robin_android.ui
+package com.kreedzt.rwr.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -18,10 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.robin_android.data.GameServer
+import com.kreedzt.rwr.data.GameServer
 
 @Composable
-fun ServerRow(server: GameServer) {
+fun ServerRow(server: GameServer, query: String = "") {
     var expanded by remember { mutableStateOf(false) }
     var showMapImage by remember { mutableStateOf(false) }
 
@@ -55,7 +55,11 @@ fun ServerRow(server: GameServer) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = server.name,
+                            text = if (query.isNotEmpty()) {
+                                SearchHighlighter.getHighlightedText(server.name, query)
+                            } else {
+                                androidx.compose.ui.text.AnnotatedString(server.name)
+                            },
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Medium
                             ),
@@ -87,7 +91,11 @@ fun ServerRow(server: GameServer) {
                     ) {
                         // 地图名称
                         Text(
-                            text = server.mapName,
+                            text = if (query.isNotEmpty()) {
+                                SearchHighlighter.getHighlightedText(server.mapName, query)
+                            } else {
+                                androidx.compose.ui.text.AnnotatedString(server.mapName)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -95,24 +103,12 @@ fun ServerRow(server: GameServer) {
                             modifier = Modifier.weight(1f)
                         )
 
-                        // 玩家数量
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = if (server.currentPlayers > 0)
-                                MaterialTheme.colorScheme.primaryContainer
-                            else
-                                MaterialTheme.colorScheme.secondaryContainer
-                        ) {
-                            Text(
-                                text = server.playerSlotStatus,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (server.currentPlayers > 0)
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                else
-                                    MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
+                        // 玩家数量 - 使用新的状态指示器
+                        ServerCapacityIndicator(
+                            server = server,
+                            query = query,
+                            modifier = Modifier
+                        )
                     }
                 }
 
@@ -132,7 +128,8 @@ fun ServerRow(server: GameServer) {
             // 服务器基本信息行
             Row(
                 modifier = Modifier.padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 // 位置信息
                 Row(
@@ -146,41 +143,27 @@ fun ServerRow(server: GameServer) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = server.serverLocation,
+                        text = if (query.isNotEmpty()) {
+                            SearchHighlighter.getHighlightedText(server.serverLocation, query)
+                        } else {
+                            androidx.compose.ui.text.AnnotatedString(server.serverLocation)
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                // 游戏模式
-                if (server.displayMode.isNotEmpty()) {
-                    Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer
-                    ) {
-                        Text(
-                            text = server.displayMode,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
+                // 游戏模式标签
+                GameModeTag(
+                    mode = server.displayMode,
+                    query = query
+                )
 
-                // Mod 标识
-                if (server.mod) {
-                    Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.errorContainer
-                    ) {
-                        Text(
-                            text = "MOD",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
+                // Mod 标签
+                ModTag(
+                    isMod = server.mod,
+                    query = query
+                )
             }
 
             // 展开的详细信息
@@ -195,7 +178,7 @@ fun ServerRow(server: GameServer) {
                     animationSpec = tween(300)
                 ) + fadeOut(animationSpec = tween(300))
             ) {
-                ServerDetailPanel(server) {
+                ServerDetailPanel(server, query) {
                     showMapImage = true
                 }
             }

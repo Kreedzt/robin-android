@@ -1,4 +1,4 @@
-package com.example.robin_android.ui
+package com.kreedzt.rwr.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,13 +11,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.robin_android.data.GameServer
+import com.kreedzt.rwr.R
+import com.kreedzt.rwr.data.GameServer
+import android.content.Intent
+import android.net.Uri
 
 @Composable
-fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
+fun ServerDetailPanel(server: GameServer, query: String = "", onViewMapImage: () -> Unit) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,22 +41,20 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // 服务器基本信息
-            ServerInfoRow(
+            // 服务器地址（带高亮）
+            ServerInfoRowWithHighlight(
                 icon = Icons.Default.Computer,
-                label = "服务器地址",
-                value = "${server.ipAddress}:${server.port}"
+                label = stringResource(R.string.server_address),
+                value = "${server.ipAddress}:${server.port}",
+                query = query
             )
 
-            ServerInfoRow(
+            // 游戏版本（带高亮）
+            ServerInfoRowWithHighlight(
                 icon = Icons.Default.Gamepad,
-                label = "游戏版本",
-                value = server.version
-            )
-
-            ServerInfoRow(
-                icon = Icons.Default.Update,
-                label = "更新时间",
-                value = server.lastUpdateTime
+                label = stringResource(R.string.game_version_detail),
+                value = server.version,
+                query = query
             )
 
             // 玩家和机器人信息
@@ -60,7 +64,7 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "玩家统计",
+                        text = stringResource(R.string.player_statistics),
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Medium
                         ),
@@ -68,17 +72,17 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "当前玩家: ${server.currentPlayers}",
+                        text = stringResource(R.string.current_players_detail, server.currentPlayers),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "机器人: ${server.bots}",
+                        text = stringResource(R.string.bots_detail, server.bots),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "最大容量: ${server.maxPlayers}",
+                        text = stringResource(R.string.max_capacity_detail, server.maxPlayers),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -86,7 +90,7 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "服务器属性",
+                        text = stringResource(R.string.server_properties_detail),
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Medium
                         ),
@@ -107,7 +111,10 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = if (server.dedicated) "专用服务器" else "非专用",
+                            text = if (server.dedicated)
+                                stringResource(R.string.dedicated_server_detail)
+                            else
+                                stringResource(R.string.non_dedicated_server_detail),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -120,7 +127,7 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
         if (server.comment.isNotEmpty()) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "服务器描述",
+                text = stringResource(R.string.server_description_detail),
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Medium
                 ),
@@ -139,7 +146,7 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
         if (server.playerList.isNotEmpty()) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "在线玩家 (${server.playerList.size})",
+                text = stringResource(R.string.online_players_detail, server.playerList.size),
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Medium
                 ),
@@ -147,12 +154,10 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 显示玩家列表，限制显示数量
-            val displayPlayers = server.playerList.take(8)
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                displayPlayers.forEach { player ->
+                server.playerList.forEach { player ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -171,14 +176,6 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                }
-
-                if (server.playerList.size > 8) {
-                    Text(
-                        text = "... 还有 ${server.playerList.size - 8} 名玩家",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
         }
@@ -204,7 +201,10 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = if (server.mapImage != null) "查看地图" else "暂无地图图片",
+                text = if (server.mapImage != null)
+                    stringResource(R.string.view_map_detail)
+                else
+                    stringResource(R.string.no_map_image_detail),
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontWeight = FontWeight.Medium
                 )
@@ -215,7 +215,24 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
         if (server.url.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
-                onClick = { /* TODO: 打开链接 */ },
+                onClick = {
+                    val raw = server.url.orEmpty().trim()
+                    if (raw.isNotEmpty()) {
+                        try {
+                            // 确保有协议，默认为 https
+                            val uri = Uri.parse(
+                                if (raw.startsWith("http://") || raw.startsWith("https://")) raw else "https://$raw"
+                            )
+                            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                addCategory(Intent.CATEGORY_BROWSABLE)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (_: Exception) {
+                            // 若无可用浏览器或解析失败则忽略
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp)
@@ -228,7 +245,7 @@ fun ServerDetailPanel(server: GameServer, onViewMapImage: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "访问服务器网站",
+                    text = stringResource(R.string.visit_server_website_detail),
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -268,6 +285,48 @@ private fun ServerInfoRow(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun ServerInfoRowWithHighlight(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String,
+    query: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Text(
+            text = if (query.isNotEmpty()) {
+                SearchHighlighter.getHighlightedText(value, query)
+            } else {
+                androidx.compose.ui.text.AnnotatedString(value)
+            },
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Medium
+            ),
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
