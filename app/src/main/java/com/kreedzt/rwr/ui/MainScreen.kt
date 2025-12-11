@@ -219,22 +219,11 @@ fun MainScreen(repository: ServerRepository? = null) {
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.app_quick_filters),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = stringResource(R.string.auto_refresh_countdown, countdownSeconds),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            Text(
+                text = stringResource(R.string.app_quick_filters),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -262,7 +251,7 @@ fun MainScreen(repository: ServerRepository? = null) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // 自动刷新开关与状态
+        // 自动刷新开关与状态 + 倒计时
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -283,12 +272,10 @@ fun MainScreen(repository: ServerRepository? = null) {
                 )
             }
             Text(
-                text = if (isRefreshing) {
-                    stringResource(R.string.refreshing_data)
-                } else if (autoRefreshEnabled) {
-                    stringResource(R.string.auto_refresh_enabled)
-                } else {
-                    stringResource(R.string.auto_refresh_disabled)
+                text = when {
+                    isRefreshing -> stringResource(R.string.refreshing_data)
+                    autoRefreshEnabled -> stringResource(R.string.auto_refresh_countdown, countdownSeconds)
+                    else -> stringResource(R.string.auto_refresh_disabled)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
@@ -365,12 +352,16 @@ fun MainScreen(repository: ServerRepository? = null) {
                 }
             }
             else -> {
+                val displayedTotalPlayers = remember(servers) {
+                    servers.sumOf { it.currentPlayers }
+                }
+                val totalPlayersText = stringResource(R.string.total_players, displayedTotalPlayers)
                 // 显示服务器列表
                 Text(
                     text = if (query.isEmpty())
-                        stringResource(R.string.all_servers, servers.size)
-                          else
-                        stringResource(R.string.search_results, servers.size),
+                        "${stringResource(R.string.all_servers, servers.size)} · $totalPlayersText"
+                    else
+                        "${stringResource(R.string.search_results, servers.size)} · $totalPlayersText",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 8.dp)

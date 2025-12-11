@@ -67,10 +67,9 @@ class ServerRepository(private val settingsManager: SettingsManager, private val
     private var serversLastUpdated: Long = 0
     private val SERVERS_CACHE_DURATION = 5 * 1000L // 5秒缓存（仅用于记录时间戳，不再作为返回缓存的条件）
 
-    // 内存中的地图数据缓存（会话级别）
+    // 内存中的地图数据缓存（会话级别），实际数据由全局共享
     private var cachedMaps: List<MapInfo> = emptyList()
     private var mapsLastUpdated: Long = 0
-    private val MEMORY_CACHE_DURATION = 5 * 60 * 1000L // 5分钟内存缓存
 
     // SharedPreferences 用于持久化地图数据缓存
     private val mapsCachePrefs: SharedPreferences = context.getSharedPreferences("maps_cache", Context.MODE_PRIVATE)
@@ -121,33 +120,75 @@ class ServerRepository(private val settingsManager: SettingsManager, private val
     }
 
     /**
-     * 获取地图数据（多级缓存策略）
-     * 1. 内存缓存（5分钟）
-     * 2. 持久化缓存（24小时）
-     * 3. API请求
-     * 4. 返回空列表（不使用硬编码数据）
+     * 获取地图数据（前台激活/启动都会触发一次刷新机会）
+     * - 优先返回内存/持久化缓存
+     * - 每次前台激活尝试一次网络刷新，失败则保留上一份成功数据
      */
     private suspend fun getMaps(): List<MapInfo> = withContext(Dispatchers.IO) {
         val currentTime = System.currentTimeMillis()
 
-        // 第一级：检查内存缓存
-        if (cachedMaps.isNotEmpty() && (currentTime - mapsLastUpdated) < MEMORY_CACHE_DURATION) {
-            Log.d("ServerRepository", "Using memory cached maps data")
+        // 读取全局缓存
+        synchronized(mapsLock) {
+            if (globalMapsCache.isNotEmpty()) {
+                cachedMaps = globalMapsCache
+                mapsLastUpdated = currentTime
+            }
+        }
+        if (cachedMaps.isNotEmpty()) {
+            Log.d("ServerRepository", "Using in-memory maps cache")
             return@withContext cachedMaps
         }
 
-        // 第二级：检查持久化缓存
+        // 持久化兜底
         val persistentMaps = loadMapsFromPersistentCache()
         if (persistentMaps != null) {
             Log.d("ServerRepository", "Using persistent cached maps data")
-            cachedMaps = persistentMaps
-            mapsLastUpdated = currentTime
+            updateGlobalMapsCache(persistentMaps, currentTime)
             return@withContext persistentMaps
         }
 
-        // 第三级：尝试从API获取
-        try {
-            Log.i("ServerRepository", "Fetching maps from API")
+        // 前台激活时允许的网络刷新
+        if (shouldFetchMapsThisForeground()) {
+            val fetched = fetchMapsFromApi(currentTime)
+            if (fetched != null) {
+                return@withContext fetched
+            }
+        }
+
+        // 回退已有缓存或空
+        synchronized(mapsLock) {
+            if (globalMapsCache.isNotEmpty()) {
+                cachedMaps = globalMapsCache
+                mapsLastUpdated = currentTime
+            }
+        }
+        if (cachedMaps.isNotEmpty()) {
+            return@withContext cachedMaps
+        }
+
+        Log.w("ServerRepository", "No maps available, returning empty list")
+        return@withContext emptyList()
+    }
+
+    private fun shouldFetchMapsThisForeground(): Boolean = synchronized(mapsLock) {
+        if (!hasFetchPendingThisForeground) return false
+        hasFetchPendingThisForeground = false
+        true
+    }
+
+    private fun updateGlobalMapsCache(maps: List<MapInfo>, timestamp: Long) {
+        synchronized(mapsLock) {
+            globalMapsCache = maps
+            globalMapsUpdatedAt = timestamp
+        }
+        cachedMaps = maps
+        mapsLastUpdated = timestamp
+        saveMapsToPersistentCache(maps)
+    }
+
+    private suspend fun fetchMapsFromApi(currentTime: Long): List<MapInfo>? {
+        return try {
+            Log.i("ServerRepository", "Fetching maps from API (once per foreground)")
             val response = apiService.getMaps()
 
             if (response.isSuccessful) {
@@ -155,27 +196,19 @@ class ServerRepository(private val settingsManager: SettingsManager, private val
                 if (jsonData.isNotEmpty()) {
                     val parsedMaps = MapsJsonParser.parseMapsFromString(jsonData)
                     if (parsedMaps.isNotEmpty()) {
-                        // 更新内存缓存
-                        cachedMaps = parsedMaps
-                        mapsLastUpdated = currentTime
-
-                        // 保存到持久化缓存
-                        saveMapsToPersistentCache(parsedMaps)
-
-                        Log.i("ServerRepository", "Successfully fetched ${parsedMaps.size} maps from API")
-                        return@withContext parsedMaps
+                        updateGlobalMapsCache(parsedMaps, currentTime)
+                        Log.i("ServerRepository", "Fetched ${parsedMaps.size} maps from API")
+                        return parsedMaps
                     }
                 }
             } else {
                 Log.w("ServerRepository", "Failed to fetch maps: HTTP ${response.code()}")
             }
+            null
         } catch (e: Exception) {
             Log.e("ServerRepository", "Error fetching maps from API: ${e.message}", e)
+            null
         }
-
-        // 第四级：返回空列表（不使用硬编码数据）
-        Log.w("ServerRepository", "No maps available, returning empty list")
-        return@withContext emptyList()
     }
 
     suspend fun findMapImage(mapId: String): String? {
@@ -395,5 +428,17 @@ private class AcceptImageInterceptor : Interceptor {
 
         Log.d("AcceptImageInterceptor", "url=${original.url} accept='${newReq.header("Accept")}'")
         return chain.proceed(newReq)
+    }
+}
+
+// 全局共享的地图缓存与刷新信号，确保“每次启动/前台激活”可触发一次网络刷新
+private val mapsLock = Any()
+private var globalMapsCache: List<MapInfo> = emptyList()
+private var globalMapsUpdatedAt: Long = 0L
+@Volatile private var hasFetchPendingThisForeground: Boolean = true // 启动时默认需要拉取
+
+internal fun notifyMapsNeedRefreshOnForeground() {
+    synchronized(mapsLock) {
+        hasFetchPendingThisForeground = true
     }
 }

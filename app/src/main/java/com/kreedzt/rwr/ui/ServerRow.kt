@@ -190,6 +190,7 @@ fun ServerRow(server: GameServer, query: String = "") {
         MapImagePreview(
             mapImageUrl = server.mapImage!!,
             mapName = server.mapName,
+            mapId = server.mapId,
             onDismiss = { showMapImage = false }
         )
     }

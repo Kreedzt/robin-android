@@ -11,6 +11,7 @@
     <string name="try_other_keywords">Try other keywords</string>
     <string name="all_servers">All Servers (%d)</string>
     <string name="search_results">Search Results (%d)</string>
+    <string name="total_players">Total Players %1$d</string>
 
     
     <!-- Map -->

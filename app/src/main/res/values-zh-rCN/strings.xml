@@ -11,6 +11,7 @@
     <string name="try_other_keywords">尝试其他关键词</string>
     <string name="all_servers">所有服务器 (%d)</string>
     <string name="search_results">搜索结果 (%d)</string>
+    <string name="total_players">总玩家 %1$d</string>
 
     
     <!-- Map -->

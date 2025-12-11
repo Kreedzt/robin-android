@@ -13,20 +13,57 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import coil.size.Precision
+import coil.size.Size
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import android.os.SystemClock
+import android.util.Log
 
 @Composable
 fun ImagePreview(imageUrl: String, onDismiss: () -> Unit) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    var startTs by remember { mutableLongStateOf(0L) }
+
+    // 根据弹窗可用区域预估目标尺寸，避免解码原图过大导致耗时
+    val (targetWidthPx, targetHeightPx) = remember(configuration, density) {
+        val widthPx = with(density) { (configuration.screenWidthDp * 0.9f).dp.roundToPx() }
+        val heightPx = with(density) { (configuration.screenHeightDp * 0.8f).dp.roundToPx() }
+        widthPx to heightPx
+    }
+
     val imageRequest = remember(imageUrl) {
         ImageRequest.Builder(context)
             .data(imageUrl)
             .setHeader("Accept", "image/avif,image/webp,*/*")
+            .size(Size(targetWidthPx, targetHeightPx))
+            .precision(Precision.INEXACT) // 允许下采样，减轻解码成本
+            .crossfade(true)
+            .listener(
+                onStart = {
+                    startTs = SystemClock.elapsedRealtime()
+                    Log.d("ImagePreview", "start url=$imageUrl")
+                },
+                onSuccess = { _, result ->
+                    val cost = SystemClock.elapsedRealtime() - startTs
+                    Log.d(
+                        "ImagePreview",
+                        "success url=$imageUrl cost=${cost}ms size=${result.drawable.intrinsicWidth}x${result.drawable.intrinsicHeight}"
+                    )
+                },
+                onError = { _, error ->
+                    val cost = if (startTs > 0) SystemClock.elapsedRealtime() - startTs else -1
+                    Log.w("ImagePreview", "error url=$imageUrl cost=${cost}ms ex=${error.throwable.message}")
+                }
+            )
             .build()
     }
     Dialog(
