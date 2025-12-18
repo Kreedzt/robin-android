@@ -49,7 +49,7 @@ Configure in GitHub repository settings (`Settings → Secrets and variables →
 
 **Example Value**:
 ```
-china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球
+china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403
 ```
 
 ### Signing Configuration (Optional for Release)

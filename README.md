@@ -58,13 +58,19 @@ Robin Android supports flexible API region configuration:
 ### Default Regions
 ```properties
 # gradle.properties
-API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球
+# Note: Chinese characters use Unicode escape sequences to avoid encoding issues
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403
 ```
 
 ### Format Specification
 ```
 id|url|label_en|label_zh;id2|url2|label_en2|label_zh2
 ```
+
+**Important**: When using Chinese characters in configuration files, use Unicode escape sequences:
+- `中国大陆` becomes `\u4e2d\u56fd\u5927\u9646`
+- `全球` becomes `\u5168\u7403`
+- This prevents encoding issues during Gradle processing
 
 ### Configuration Methods
 
@@ -73,13 +79,29 @@ id|url|label_en|label_zh;id2|url2|label_en2|label_zh2
 3. **Environment Variables** (`export API_REGIONS="..."`)
 4. **Command Line** (`./gradlew assembleDebug -PAPI_REGIONS="..."`)
 
+#### Unicode Encoding Requirements
+**Important**: When configuring Chinese labels in properties files, use Unicode escape sequences:
+
+```properties
+# ❌ Incorrect - will cause encoding issues
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆
+
+# ✅ Correct - uses Unicode escapes
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646
+```
+
+**Conversion Tools**:
+- Java: `native2ascii -encoding UTF-8 input.txt output.txt`
+- Online: Various Unicode converter tools
+- Reference: Use the examples in `local.properties.example`
+
 For detailed configuration options, see the [documentation](docs/).
 
 ## Development
 
 ### Project Structure
 ```
-app/src/main/java/com/kreedzt/rwr/
+app/src/main/java/com/kreedzt/robin/
 ├── data/           # Data layer
 │   ├── SettingsManager.kt      # App settings management
 │   ├── ServerRepository.kt      # Data repository

@@ -66,8 +66,8 @@ When contributing to the documentation:
 
 ### Code Examples
 ```kotlin
-// Example: Configure API regions
-val regions = "china|https://api.cn/|China|中国;global|https://api.com/|Global|全球"
+// Example: Configure API regions (using Unicode for Chinese)
+val regions = "china|https://api.cn/|China|\u4e2d\u56fd;global|https://api.com/|Global|\u5168\u7403"
 ```
 
 ### Cross-References

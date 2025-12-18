@@ -2,6 +2,31 @@
 
 This document explains how to configure API regions in Robin Android, supporting multiple endpoints with custom labels.
 
+## ⚠️ Important: Unicode Encoding Requirements
+
+**When using Chinese characters in configuration files, you MUST use Unicode escape sequences** to avoid encoding issues:
+
+```properties
+# ❌ Incorrect - will cause encoding issues
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆
+
+# ✅ Correct - uses Unicode escapes
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646
+```
+
+### Common Unicode Conversions
+- `中国大陆` → `\u4e2d\u56fd\u5927\u9646`
+- `全球` → `\u5168\u7403`
+- `开发环境` → `\u5f00\u53d1\u73af\u5883`
+- `本地服务器` → `\u672c\u5730\u670d\u52a1\u5668`
+- `测试` → `\u6d4b\u8bd5`
+- `生产` → `\u751f\u4ea7`
+
+### Conversion Tools
+- **Java**: `native2ascii -encoding UTF-8 input.txt output.txt`
+- **Online**: Various Unicode converter tools
+- **Reference**: See `local.properties.example` for complete examples
+
 ## Overview
 
 Robin Android uses a flexible configuration system that allows you to define multiple API regions with bilingual labels. The configuration is loaded into BuildConfig at compile time and can be overridden through multiple methods.
@@ -29,22 +54,23 @@ id|url|label_en|label_zh;id2|url2|label_en2|label_zh2
 
 ### Default Configuration (2 regions)
 ```properties
-API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球
+# Note: Chinese characters use Unicode escape sequences
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403
 ```
 
 ### Development Environment (3 regions)
 ```properties
-API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球;dev|https://dev.api.com/|Development|开发环境
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403;dev|https://dev.api.com/|Development|\u5f00\u53d1\u73af\u5883
 ```
 
 ### Local Testing (single region)
 ```properties
-API_REGIONS=local|http://192.168.1.100:3000/|Local Server|本地服务器
+API_REGIONS=local|http://192.168.1.100:3000/|Local Server|\u672c\u5730\u670d\u52a1\u5668
 ```
 
 ### Multiple Environments
 ```properties
-API_REGIONS=staging|https://staging.api.com/|Staging|测试;prod|https://api.com/|Production|生产
+API_REGIONS=staging|https://staging.api.com/|Staging|\u6d4b\u8bd5;prod|https://api.com/|Production|\u751f\u4ea7
 ```
 
 ## Configuration Methods
@@ -54,7 +80,7 @@ API_REGIONS=staging|https://staging.api.com/|Staging|测试;prod|https://api.com
 File: `gradle.properties`
 
 ```properties
-API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403
 ```
 
 ### 2. Local Properties (Development Override)
@@ -62,13 +88,13 @@ API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|h
 File: `local.properties` (not tracked in Git)
 
 ```properties
-API_REGIONS=dev|https://dev.api.com/|Development|开发;staging|https://staging.api.com/|Staging|测试
+API_REGIONS=dev|https://dev.api.com/|Development|\u5f00\u53d1;staging|https://staging.api.com/|Staging|\u6d4b\u8bd5
 ```
 
 ### 3. Environment Variables
 
 ```bash
-export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403"
 ./gradlew assembleDebug
 ```
 
@@ -76,7 +102,7 @@ export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|中国大陆;
 
 ```bash
 ./gradlew assembleDebug \
-  -PAPI_REGIONS="dev|https://dev.api.com/|Development|开发;staging|https://staging.api.com/|Staging|测试"
+  -PAPI_REGIONS="dev|https://dev.api.com/|Development|\u5f00\u53d1;staging|https://staging.api.com/|Staging|\u6d4b\u8bd5"
 ```
 
 ### 5. GitHub Actions (CI/CD)
@@ -84,7 +110,7 @@ export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|中国大陆;
 Configure in GitHub repository secrets:
 
 - **Secret Name**: `API_REGIONS`
-- **Value**: `china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球`
+- **Value**: `china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403`
 
 ## Configuration Priority
 
@@ -102,21 +128,21 @@ The configuration is resolved with the following priority (high to low):
 
 ```properties
 # local.properties
-API_REGIONS=local|http://192.168.1.100:3000/|Local Server|本地服务器
+API_REGIONS=local|http://192.168.1.100:3000/|Local Server|\u672c\u5730\u670d\u52a1\u5668
 ```
 
 ### Testing with Staging Environment
 
 ```properties
 # local.properties
-API_REGIONS=staging|https://staging.api.com/|Staging|测试;prod|https://api.com/|Production|生产
+API_REGIONS=staging|https://staging.api.com/|Staging|\u6d4b\u8bd5;prod|https://api.com/|Production|\u751f\u4ea7
 ```
 
 ### Production Deployment
 
 ```bash
 # Environment or command line
-export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403"
 ```
 
 ## Verification
@@ -126,7 +152,7 @@ export API_REGIONS="china|https://robin.kreedzt.cn/|China Mainland|中国大陆;
 After building, inspect the generated BuildConfig:
 
 ```java
-// app/build/generated/source/buildConfig/debug/com/kreedzt/rwr/BuildConfig.java
+// app/build/generated/source/buildConfig/debug/com/kreedzt/robin/BuildConfig.java
 public static final String API_REGIONS_CONFIG = "china|https://robin.kreedzt.cn/|...;global|https://robin.kreedzt.com/|...";
 ```
 

@@ -24,17 +24,31 @@ sdk.dir=/Users/your-username/Library/Android/sdk
 # Uncomment and modify to override the default configuration:
 
 # Example 1: Add a development environment
-# API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球;dev|https://dev.robin.kreedzt.com/|Development|开发环境
+# Note: Chinese characters must be Unicode-escaped to avoid encoding issues
+# API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403;dev|https://dev.robin.kreedzt.com/|Development|\u5f00\u53d1\u73af\u5883
 
 # Example 2: Use only local development server
-# API_REGIONS=local|http://192.168.1.100:3000/|Local Server|本地服务器
+# API_REGIONS=local|http://192.168.1.100:3000/|Local Server|\u672c\u5730\u670d\u52a1\u5668
 
 # Example 3: Multiple staging environments
-# API_REGIONS=staging-cn|https://staging.robin.kreedzt.cn/|Staging CN|测试环境(中国);staging-us|https://staging.robin.kreedzt.com/|Staging US|测试环境(美国);prod-cn|https://robin.kreedzt.cn/|Production CN|生产环境(中国);prod-us|https://robin.kreedzt.com/|Production US|生产环境(美国)
+# API_REGIONS=staging-cn|https://staging.robin.kreedzt.cn/|Staging CN|\u6d4b\u8bd5\u73af\u5883(\u4e2d\u56fd);staging-us|https://staging.robin.kreedzt.com/|Staging US|\u6d4b\u8bd5\u73af\u5883(\u7f8e\u56fd);prod-cn|https://robin.kreedzt.cn/|Production CN|\u751f\u4ea7\u73af\u5883(\u4e2d\u56fd);prod-us|https://robin.kreedzt.com/|Production US|\u751f\u4ea7\u73af\u5883(\u7f8e\u56fd)
 
 # Example 4: Custom third-party API
-# API_REGIONS=custom|https://custom-api.example.com/|Custom API|自定义接口
+# API_REGIONS=custom|https://custom-api.example.com/|Custom API|\u81ea\u5b9a\u4e49\u63a5\u53e3
 
+# ============================================================================
+# IMPORTANT: Unicode Encoding for Chinese Characters
+# ============================================================================
+# When using Chinese characters in this file, you MUST use Unicode escape sequences:
+# - 中文 becomes \u4e2d\u6587
+# - 亚洲 becomes \u4e9a\u6d32
+# - 欧洲 becomes \u6b27\u6d32
+#
+# This prevents encoding issues when Gradle processes the properties file.
+# You can use online tools or Java's native2ascii tool to convert:
+#   native2ascii -encoding UTF-8 input.txt output.txt
+#
+# For most cases, you can copy the Unicode-escaped examples above and modify the URLs.
 
 # ============================================================================
 # Common Use Cases
@@ -43,10 +57,10 @@ sdk.dir=/Users/your-username/Library/Android/sdk
 # Use Case 1: Connect to local development server
 # Replace 192.168.1.100 with your computer's local IP address
 # DO NOT use localhost or 127.0.0.1 (won't work on physical devices/emulators)
-# API_REGIONS=local|http://192.168.1.100:8080/|Local Dev|本地开发
+# API_REGIONS=local|http://192.168.1.100:8080/|Local Dev|\u672c\u5730\u5f00\u53d1
 
 # Use Case 2: Switch between staging and production
-# API_REGIONS=staging|https://staging.api.com/|Staging|测试;prod|https://api.com/|Production|生产
+# API_REGIONS=staging|https://staging.api.com/|Staging|\u6d4b\u8bd5;prod|https://api.com/|Production|\u751f\u4ea7
 
 # Use Case 3: Multiple regional endpoints
-# API_REGIONS=asia|https://asia.api.com/|Asia|亚洲;europe|https://europe.api.com/|Europe|欧洲;americas|https://americas.api.com/|Americas|美洲
+# API_REGIONS=asia|https://asia.api.com/|Asia|\u4e9a\u6d32;europe|https://europe.api.com/|Europe|\u6b27\u6d32;americas|https://americas.api.com/|Americas|\u7f8e\u6d32

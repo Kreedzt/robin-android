@@ -246,7 +246,7 @@ android {
         // API Regions Configuration
         val apiRegionsConfig = project.findProperty("API_REGIONS")?.toString()
             ?: System.getenv("API_REGIONS")
-            ?: "china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+            ?: "china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403"
 
         buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
@@ -262,12 +262,12 @@ android {
 
 **gradle.properties** (global defaults):
 ```properties
-API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球
+API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|\u4e2d\u56fd\u5927\u9646;global|https://robin.kreedzt.com/|Global|\u5168\u7403
 ```
 
 **local.properties** (local overrides, not in Git):
 ```properties
-API_REGIONS=dev|https://dev.api.com/|Development|开发
+API_REGIONS=dev|https://dev.api.com/|Development|\u5f00\u53d1
 ```
 
 ## Continuous Integration
