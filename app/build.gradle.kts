@@ -19,10 +19,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // API Regions Configuration
+        // Format: "id|url|label_en|label_zh;id2|url2|label_en2|label_zh2"
+        // Example: "china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+        // Can be overridden by gradle.properties or environment variables
+        val apiRegionsConfig = project.findProperty("API_REGIONS")?.toString()
+            ?: System.getenv("API_REGIONS")
+            ?: "china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+
+        buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     buildTypes {

@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import android.os.Build
+import com.kreedzt.rwr.BuildConfig
 import com.kreedzt.rwr.R
 import com.kreedzt.rwr.data.SettingsManager
 
@@ -28,8 +29,11 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     var selectedLanguage by remember { mutableStateOf(settingsManager.language) }
-    var selectedApiRegion by remember { mutableStateOf(settingsManager.apiRegion) }
+    var selectedApiRegionId by remember { mutableStateOf(settingsManager.apiRegionId) }
     var selectedTheme by remember { mutableStateOf(settingsManager.themeMode) }
+
+    // Get available API regions
+    val apiRegions = remember { SettingsManager.API_REGIONS }
 
     Scaffold(
         topBar = {
@@ -144,25 +148,20 @@ fun SettingsScreen(
                     Column(
                         modifier = Modifier.selectableGroup()
                     ) {
-                        ApiRegionOption(
-                            text = stringResource(R.string.api_global),
-                            url = "https://robin.kreedzt.com/",
-                            selected = selectedApiRegion == SettingsManager.ApiRegion.GLOBAL,
-                            onClick = {
-                                selectedApiRegion = SettingsManager.ApiRegion.GLOBAL
-                                settingsManager.apiRegion = SettingsManager.ApiRegion.GLOBAL
+                        apiRegions.forEachIndexed { index, region ->
+                            if (index > 0) {
+                                HorizontalDivider()
                             }
-                        )
-                        HorizontalDivider()
-                        ApiRegionOption(
-                            text = stringResource(R.string.api_china),
-                            url = "https://robin.kreedzt.cn/",
-                            selected = selectedApiRegion == SettingsManager.ApiRegion.CHINA,
-                            onClick = {
-                                selectedApiRegion = SettingsManager.ApiRegion.CHINA
-                                settingsManager.apiRegion = SettingsManager.ApiRegion.CHINA
-                            }
-                        )
+                            ApiRegionOption(
+                                text = region.getLabel(selectedLanguage),
+                                url = region.url,
+                                selected = selectedApiRegionId == region.id,
+                                onClick = {
+                                    selectedApiRegionId = region.id
+                                    settingsManager.apiRegionId = region.id
+                                }
+                            )
+                        }
                     }
                 }
             }

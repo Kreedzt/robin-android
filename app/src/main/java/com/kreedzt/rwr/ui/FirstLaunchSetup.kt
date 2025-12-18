@@ -35,17 +35,17 @@ fun FirstLaunchSetupDialog(
         if (lang == "zh") "zh" else "en"
     }
 
-    val defaultApiRegion = remember {
-        if (systemLanguage == "zh") SettingsManager.ApiRegion.CHINA else SettingsManager.ApiRegion.GLOBAL
+    val defaultApiRegionId = remember {
+        if (systemLanguage == "zh") "china" else "global"
     }
 
     var selectedLanguage by remember { mutableStateOf(systemLanguage) }
-    var selectedApiRegion by remember { mutableStateOf(defaultApiRegion) }
+    var selectedApiRegionId by remember { mutableStateOf(defaultApiRegionId) }
 
     // 自动应用默认设置
     LaunchedEffect(Unit) {
         selectedLanguage = settingsManager.language.ifEmpty { systemLanguage }
-        selectedApiRegion = settingsManager.apiRegion
+        selectedApiRegionId = settingsManager.apiRegionId
     }
 
     if (settingsManager.isFirstLaunch) {
@@ -136,15 +136,15 @@ fun FirstLaunchSetupDialog(
                             ApiRegionOption(
                                 text = stringResource(R.string.api_global),
                                 description = stringResource(R.string.api_global_description),
-                                selected = selectedApiRegion == SettingsManager.ApiRegion.GLOBAL,
-                                onClick = { selectedApiRegion = SettingsManager.ApiRegion.GLOBAL }
+                                selected = selectedApiRegionId == "global",
+                                onClick = { selectedApiRegionId = "global" }
                             )
                             HorizontalDivider()
                             ApiRegionOption(
                                 text = stringResource(R.string.api_china),
                                 description = stringResource(R.string.api_china_description),
-                                selected = selectedApiRegion == SettingsManager.ApiRegion.CHINA,
-                                onClick = { selectedApiRegion = SettingsManager.ApiRegion.CHINA }
+                                selected = selectedApiRegionId == "china",
+                                onClick = { selectedApiRegionId = "china" }
                             )
                         }
                     }
@@ -155,7 +155,7 @@ fun FirstLaunchSetupDialog(
                     onClick = {
                         // 保存设置
                         settingsManager.language = selectedLanguage
-                        settingsManager.apiRegion = selectedApiRegion
+                        settingsManager.apiRegionId = selectedApiRegionId
                         settingsManager.isFirstLaunch = false
                         // 应用语言设置
                         settingsManager.applyLanguage(selectedLanguage)

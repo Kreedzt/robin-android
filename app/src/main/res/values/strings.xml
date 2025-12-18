@@ -110,4 +110,10 @@
     <string name="app_filter_official_dominance">Official Dominance</string>
     <string name="app_filter_official_mod_castling">Official Mod Castling</string>
     <string name="app_filter_official_mod_helldivers">Official Mod HellDivers</string>
+
+    <!-- Disclaimer -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <string name="disclaimer_content">Robin Android is an unofficial community application and is not affiliated with, endorsed by, or authorized by the creators or publishers of Running With Rifles.</string>
+    <string name="disclaimer_data_source">• All server data originates from official RWR game servers\n• Accessed via rwrs-server API proxy for stability\n• No modification of game data\n• Read-only access to public server information</string>
+    <string name="disclaimer_trademark">Running With Rifles is a trademark of its respective owners.</string>
 </resources>

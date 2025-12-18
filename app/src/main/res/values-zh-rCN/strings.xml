@@ -110,4 +110,10 @@
     <string name="app_filter_official_dominance">官方 PVP</string>
     <string name="app_filter_official_mod_castling">官方 Mod Castling</string>
     <string name="app_filter_official_mod_helldivers">官方 Mod 地狱潜兵</string>
+
+    <!-- Disclaimer -->
+    <string name="disclaimer_title">免责声明</string>
+    <string name="disclaimer_content">Robin Android 是一个非官方的社区应用程序，与 Running With Rifles 的创建者或发行商没有任何关联、认可或授权。</string>
+    <string name="disclaimer_data_source">• 所有服务器数据均来自官方 RWR 游戏服务器\n• 通过 rwrs-server API 代理访问以提供稳定性\n• 不修改游戏数据\n• 仅访问公开的服务器信息</string>
+    <string name="disclaimer_trademark">Running With Rifles 是其各自所有者的商标。</string>
 </resources>

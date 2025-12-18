@@ -1,0 +1,52 @@
+# Local Properties Example
+#
+# This file serves as an example for local.properties
+# Copy this file to local.properties and customize the values for your local environment
+#
+# IMPORTANT: local.properties is in .gitignore and should NEVER be committed to version control
+
+# Android SDK location (required)
+# Replace with your actual Android SDK path
+sdk.dir=/Users/your-username/Library/Android/sdk
+
+# ============================================================================
+# API Configuration (Flexible Format - Recommended)
+# ============================================================================
+# Format: "id|url|label_en|label_zh;id2|url2|label_en2|label_zh2"
+#
+# Each region is separated by semicolon (;)
+# Fields within a region are separated by pipe (|):
+#   1. id: Unique identifier (e.g., "china", "global", "dev")
+#   2. url: API base URL (must end with /)
+#   3. label_en: English label for UI display
+#   4. label_zh: Chinese label for UI display
+#
+# Uncomment and modify to override the default configuration:
+
+# Example 1: Add a development environment
+# API_REGIONS=china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球;dev|https://dev.robin.kreedzt.com/|Development|开发环境
+
+# Example 2: Use only local development server
+# API_REGIONS=local|http://192.168.1.100:3000/|Local Server|本地服务器
+
+# Example 3: Multiple staging environments
+# API_REGIONS=staging-cn|https://staging.robin.kreedzt.cn/|Staging CN|测试环境(中国);staging-us|https://staging.robin.kreedzt.com/|Staging US|测试环境(美国);prod-cn|https://robin.kreedzt.cn/|Production CN|生产环境(中国);prod-us|https://robin.kreedzt.com/|Production US|生产环境(美国)
+
+# Example 4: Custom third-party API
+# API_REGIONS=custom|https://custom-api.example.com/|Custom API|自定义接口
+
+
+# ============================================================================
+# Common Use Cases
+# ============================================================================
+
+# Use Case 1: Connect to local development server
+# Replace 192.168.1.100 with your computer's local IP address
+# DO NOT use localhost or 127.0.0.1 (won't work on physical devices/emulators)
+# API_REGIONS=local|http://192.168.1.100:8080/|Local Dev|本地开发
+
+# Use Case 2: Switch between staging and production
+# API_REGIONS=staging|https://staging.api.com/|Staging|测试;prod|https://api.com/|Production|生产
+
+# Use Case 3: Multiple regional endpoints
+# API_REGIONS=asia|https://asia.api.com/|Asia|亚洲;europe|https://europe.api.com/|Europe|欧洲;americas|https://americas.api.com/|Americas|美洲

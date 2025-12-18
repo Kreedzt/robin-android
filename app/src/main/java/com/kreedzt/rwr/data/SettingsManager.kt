@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.mutableStateOf
+import com.kreedzt.rwr.BuildConfig
 import java.util.*
 
 /**
@@ -30,11 +31,15 @@ class SettingsManager private constructor(private val context: Context) {
         private const val KEY_LAST_QUICK_FILTERS = "last_quick_filters"
         private const val KEY_THEME_MODE = "theme_mode"
 
-        private const val API_URL_CHINA = "https://robin.kreedzt.cn/"
-        private const val API_URL_GLOBAL = "https://robin.kreedzt.com/"
-
         private const val DEFAULT_LANGUAGE = "en"
         val SUPPORTED_LANGUAGES = listOf("en", "zh")
+
+        // API Regions Configuration
+        // Loaded from BuildConfig (configured in build.gradle.kts)
+        // Can be overridden via gradle.properties or environment variables
+        val API_REGIONS: List<ApiRegionConfig> by lazy {
+            ApiRegionConfig.parseFromString(BuildConfig.API_REGIONS_CONFIG)
+        }
     }
 
     // 全局语言状态，用于触发UI重新组合
@@ -71,27 +76,42 @@ class SettingsManager private constructor(private val context: Context) {
             language = autoLanguage
 
             // 根据系统语言自动设置API区域
-            val autoApiRegion = if (systemLanguage == "zh") {
-                ApiRegion.CHINA
+            val autoApiRegionId = if (systemLanguage == "zh") {
+                "china"  // 默认中文用户使用中国区域
             } else {
-                ApiRegion.GLOBAL
+                "global"  // 默认英文用户使用全球区域
             }
-            apiRegion = autoApiRegion
+            apiRegionId = autoApiRegionId
 
             // 标记不是首次启动
             isFirstLaunch = false
         }
     }
 
-    // API 区域设置
-    var apiRegion: ApiRegion
+    // API 区域设置 (使用区域ID字符串)
+    var apiRegionId: String
         get() {
-            val regionValue = sharedPrefs.getString(KEY_API_REGION, ApiRegion.GLOBAL.name)
-            return ApiRegion.valueOf(regionValue ?: ApiRegion.GLOBAL.name)
+            val regionId = sharedPrefs.getString(KEY_API_REGION, null)
+            // 如果未设置或无效，返回第一个可用区域的ID
+            return if (regionId != null && API_REGIONS.any { it.id == regionId }) {
+                regionId
+            } else {
+                API_REGIONS.firstOrNull()?.id ?: "global"
+            }
         }
         set(value) {
-            sharedPrefs.edit().putString(KEY_API_REGION, value.name).apply()
+            sharedPrefs.edit().putString(KEY_API_REGION, value).apply()
         }
+
+    // 获取当前API区域配置
+    val currentApiRegion: ApiRegionConfig
+        get() = API_REGIONS.firstOrNull { it.id == apiRegionId }
+            ?: API_REGIONS.firstOrNull()
+            ?: ApiRegionConfig.DEFAULT_REGIONS.first()
+
+    // 获取API基础URL
+    val apiBaseUrl: String
+        get() = currentApiRegion.url
 
     // 语言设置
     var language: String
@@ -101,13 +121,6 @@ class SettingsManager private constructor(private val context: Context) {
             applyLanguage(value)
             // 更新全局语言状态以触发UI重新组合
             languageState.value = value
-        }
-
-    // 获取API基础URL
-    val apiBaseUrl: String
-        get() = when (apiRegion) {
-            ApiRegion.CHINA -> API_URL_CHINA
-            ApiRegion.GLOBAL -> API_URL_GLOBAL
         }
 
     // 获取当前语言代码
@@ -156,11 +169,6 @@ class SettingsManager private constructor(private val context: Context) {
             sharedPrefs.edit().putString(KEY_THEME_MODE, value.name).apply()
             themeState.value = value
         }
-
-    enum class ApiRegion {
-        CHINA,    // 中国大陆
-        GLOBAL    // 全球
-    }
 
     enum class ThemeMode {
         SYSTEM,
