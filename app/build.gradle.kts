@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.kreedzt.rwr"
+    namespace = "com.kreedzt.robin"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.kreedzt.rwr"
+        applicationId = "com.kreedzt.robin"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -26,7 +26,7 @@ android {
         // Can be overridden by gradle.properties or environment variables
         val apiRegionsConfig = project.findProperty("API_REGIONS")?.toString()
             ?: System.getenv("API_REGIONS")
-            ?: "china|https://robin.kreedzt.cn/|China Mainland|\\u4e2d\\u56fd\\u5927\\u9646;global|https://robin.kreedzt.com/|Global|\\u5168\\u7403"
+            ?: "global|https://robin.kreedzt.com/|Global|\\u5168\\u7403;china|https://robin.kreedzt.cn/|China Mainland|\\u4e2d\\u56fd\\u5927\\u9646"
 
         buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
