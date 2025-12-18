@@ -19,8 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kreedzt.rwr.BuildConfig
 import com.kreedzt.rwr.R
 import com.kreedzt.rwr.data.SettingsManager
+import com.kreedzt.rwr.data.ApiRegionConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,24 +31,16 @@ fun FirstLaunchSetupDialog(
     onDismiss: () -> Unit,
     onComplete: () -> Unit
 ) {
-    // 根据系统语言自动选择默认值
-    val systemLanguage = remember {
-        val lang = java.util.Locale.getDefault().language
-        if (lang == "zh") "zh" else "en"
+    val apiRegions: List<ApiRegionConfig> = remember {
+        ApiRegionConfig.parseFromString(BuildConfig.API_REGIONS_CONFIG)
     }
 
     val defaultApiRegionId = remember {
-        if (systemLanguage == "zh") "china" else "global"
+        apiRegions.firstOrNull()?.id ?: "global"
     }
 
-    var selectedLanguage by remember { mutableStateOf(systemLanguage) }
-    var selectedApiRegionId by remember { mutableStateOf(defaultApiRegionId) }
-
-    // 自动应用默认设置
-    LaunchedEffect(Unit) {
-        selectedLanguage = settingsManager.language.ifEmpty { systemLanguage }
-        selectedApiRegionId = settingsManager.apiRegionId
-    }
+    var selectedLanguage by remember { mutableStateOf(settingsManager.language.ifEmpty { "en" }) }
+    var selectedApiRegionId by remember { mutableStateOf(settingsManager.apiRegionId.ifEmpty { defaultApiRegionId }) }
 
     if (settingsManager.isFirstLaunch) {
         AlertDialog(
@@ -133,19 +127,17 @@ fun FirstLaunchSetupDialog(
                         Column(
                             modifier = Modifier.selectableGroup()
                         ) {
-                            ApiRegionOption(
-                                text = stringResource(R.string.api_global),
-                                description = stringResource(R.string.api_global_description),
-                                selected = selectedApiRegionId == "global",
-                                onClick = { selectedApiRegionId = "global" }
-                            )
-                            HorizontalDivider()
-                            ApiRegionOption(
-                                text = stringResource(R.string.api_china),
-                                description = stringResource(R.string.api_china_description),
-                                selected = selectedApiRegionId == "china",
-                                onClick = { selectedApiRegionId = "china" }
-                            )
+                            apiRegions.forEachIndexed { index, region ->
+                                ApiRegionOption(
+                                    text = region.getLabel(selectedLanguage),
+                                    description = region.url,
+                                    selected = selectedApiRegionId == region.id,
+                                    onClick = { selectedApiRegionId = region.id }
+                                )
+                                if (index < apiRegions.size - 1) {
+                                    HorizontalDivider()
+                                }
+                            }
                         }
                     }
                 }

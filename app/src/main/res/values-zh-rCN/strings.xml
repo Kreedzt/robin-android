@@ -42,9 +42,7 @@
     <string name="about">关于</string>
     <string name="language">语言</string>
     <string name="api_region">API 区域</string>
-    <string name="api_china">中国大陆</string>
-    <string name="api_global">全球</string>
-    <string name="app_version">应用版本</string>
+        <string name="app_version">应用版本</string>
     <string name="app_description">游戏服务器浏览器和管理工具</string>
 
     <!-- Actions -->
@@ -74,9 +72,7 @@
     <string name="first_launch_description">让我们根据您的偏好配置您的体验</string>
     <string name="select_language">选择语言</string>
     <string name="select_api_region">选择API区域</string>
-    <string name="api_china_description">为中国大陆用户优化</string>
-    <string name="api_global_description">推荐国际用户使用</string>
-    <string name="complete_setup">完成设置</string>
+        <string name="complete_setup">完成设置</string>
     <string name="setup_complete">设置完成！</string>
     <string name="setup_success_message">您的偏好设置已成功保存。</string>
     <string name="continue_text">继续</string>

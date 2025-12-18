@@ -42,9 +42,7 @@
     <string name="about">About</string>
     <string name="language">Language</string>
     <string name="api_region">API Region</string>
-    <string name="api_china">China Mainland</string>
-    <string name="api_global">Global</string>
-    <string name="app_version">App Version</string>
+        <string name="app_version">App Version</string>
     <string name="app_description">Game server browser and management tool</string>
 
     <!-- Actions -->
@@ -74,9 +72,7 @@
     <string name="first_launch_description">Let\'s configure your experience based on your preferences</string>
     <string name="select_language">Select Language</string>
     <string name="select_api_region">Select API Region</string>
-    <string name="api_china_description">Optimized for users in Mainland China</string>
-    <string name="api_global_description">Recommended for international users</string>
-    <string name="complete_setup">Complete Setup</string>
+        <string name="complete_setup">Complete Setup</string>
     <string name="setup_complete">Setup Complete!</string>
     <string name="setup_success_message">Your preferences have been saved successfully.</string>
     <string name="continue_text">Continue</string>

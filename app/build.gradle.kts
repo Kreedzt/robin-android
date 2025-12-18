@@ -22,11 +22,11 @@ android {
 
         // API Regions Configuration
         // Format: "id|url|label_en|label_zh;id2|url2|label_en2|label_zh2"
-        // Example: "china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+        // Example: "china|https://robin.kreedzt.cn/|China Mainland|\\u4e2d\\u56fd\\u5927\\u9646;global|https://robin.kreedzt.com/|Global|\\u5168\\u7403"
         // Can be overridden by gradle.properties or environment variables
         val apiRegionsConfig = project.findProperty("API_REGIONS")?.toString()
             ?: System.getenv("API_REGIONS")
-            ?: "china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球"
+            ?: "china|https://robin.kreedzt.cn/|China Mainland|\\u4e2d\\u56fd\\u5927\\u9646;global|https://robin.kreedzt.com/|Global|\\u5168\\u7403"
 
         buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
