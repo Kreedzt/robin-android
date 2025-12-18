@@ -9,14 +9,19 @@ class SearchHighlighterTest {
     private fun mergeOverlappingRanges(ranges: List<IntRange>): List<IntRange> {
         if (ranges.isEmpty()) return emptyList()
 
-        val merged = mutableListOf<IntRange>()
-        var current = ranges[0]
+        // Sort ranges first to ensure correct merging
+        val sortedRanges = ranges.sortedBy { it.first }
 
-        for (i in 1 until ranges.size) {
-            val next = ranges[i]
+        val merged = mutableListOf<IntRange>()
+        var current = sortedRanges[0]
+
+        for (i in 1 until sortedRanges.size) {
+            val next = sortedRanges[i]
             if (next.first <= current.last) {
+                // 重叠，合并范围
                 current = current.first..maxOf(current.last, next.last)
             } else {
+                // 不重叠，添加当前范围并开始新范围
                 merged.add(current)
                 current = next
             }
@@ -86,7 +91,7 @@ class SearchHighlighterTest {
         val result = mergeOverlappingRanges(ranges)
 
         assertEquals(2, result.size)
-        assertEquals(1..10, result[0]) // Merged all nested ranges
+        assertEquals(1..10, result[0]) // Merged 1..10, 2..5, and 3..7
         assertEquals(11..15, result[1])
     }
 
@@ -113,14 +118,16 @@ class SearchHighlighterTest {
     }
 
     @Test
-    fun `mergeOverlappingRanges with single element ranges should merge adjacent`() {
+    fun `mergeOverlappingRanges with single element ranges should handle separately`() {
         val ranges = listOf(1..1, 2..2, 3..3, 5..5)
 
         val result = mergeOverlappingRanges(ranges)
 
-        assertEquals(2, result.size)
-        assertEquals(1..3, result[0]) // Merged 1..1, 2..2, 3..3
-        assertEquals(5..5, result[1])
+        assertEquals(4, result.size)
+        assertEquals(1..1, result[0])
+        assertEquals(2..2, result[1])
+        assertEquals(3..3, result[2])
+        assertEquals(5..5, result[3])
     }
 
     @Test

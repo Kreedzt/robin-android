@@ -2,7 +2,12 @@ package com.kreedzt.rwr.data
 
 import org.junit.Test
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
 class ApiRegionConfigTest {
 
     @Test
@@ -63,6 +68,20 @@ class ApiRegionConfigTest {
 
         val regions = ApiRegionConfig.parseFromString(malformedConfig)
 
+        // 这个测试实际上应该成功解析出1个有效区域
+        // 因为"invalid|format|missing|fields"有4个部分，是有效的
+        assertEquals(1, regions.size)
+        assertEquals("invalid", regions[0].id)
+        assertEquals("format", regions[0].url)
+    }
+
+    @Test
+    fun `parseFromString with truly malformed config should return default regions`() {
+        val malformedConfig = "invalid|format|missing;another|invalid"
+
+        val regions = ApiRegionConfig.parseFromString(malformedConfig)
+
+        // 这个配置的两个部分都少于4个字段，应该返回默认配置
         assertEquals(2, regions.size)
         assertEquals("china", regions[0].id)
         assertEquals("global", regions[1].id)

@@ -2,7 +2,12 @@ package com.kreedzt.rwr.data
 
 import org.junit.Test
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
 class ServerListXmlParserTest {
 
     @Test
@@ -10,38 +15,36 @@ class ServerListXmlParserTest {
         val xmlString = """
             <servers>
                 <server>
-                    <id>1</id>
                     <name>Test Server</name>
-                    <ip>192.168.1.100</ip>
+                    <address>192.168.1.100</address>
                     <port>27015</port>
-                    <currentPlayers>10</currentPlayers>
-                    <maxPlayers>32</maxPlayers>
-                    <mapId>test_map</mapId>
+                    <current_players>10</current_players>
+                    <max_players>32</max_players>
+                    <map_id>test_map</map_id>
                     <mode>invasion</mode>
                     <version>1.0.0</version>
                     <bots>5</bots>
-                    <dedicated>true</dedicated>
+                    <dedicated>1</dedicated>
                     <comment>A test server</comment>
                     <url>https://example.com</url>
                     <country>US East</country>
-                    <lastUpdate>2024-01-01T00:00:00Z</lastUpdate>
+                    <timestamp>1704067200</timestamp>
                 </server>
                 <server>
-                    <id>2</id>
                     <name>Another Server</name>
-                    <ip>192.168.1.200</ip>
+                    <address>192.168.1.200</address>
                     <port>27016</port>
-                    <currentPlayers>20</currentPlayers>
-                    <maxPlayers>64</maxPlayers>
-                    <mapId>another_map</mapId>
+                    <current_players>20</current_players>
+                    <max_players>64</max_players>
+                    <map_id>another_map</map_id>
                     <mode>dominance</mode>
                     <version>1.1.0</version>
                     <bots>10</bots>
-                    <dedicated>false</dedicated>
+                    <dedicated>0</dedicated>
                     <comment>Another test server</comment>
                     <url>https://another.com</url>
                     <country>EU West</country>
-                    <lastUpdate>2024-01-02T00:00:00Z</lastUpdate>
+                    <timestamp>1704153600</timestamp>
                 </server>
             </servers>
         """.trimIndent()
@@ -51,7 +54,7 @@ class ServerListXmlParserTest {
         assertEquals(2, servers.size)
 
         val firstServer = servers[0]
-        assertEquals("1", firstServer.id)
+        assertEquals("0", firstServer.id)
         assertEquals("Test Server", firstServer.name)
         assertEquals("192.168.1.100", firstServer.ipAddress)
         assertEquals(27015, firstServer.port)
@@ -67,7 +70,7 @@ class ServerListXmlParserTest {
         assertEquals("US East", firstServer.country)
 
         val secondServer = servers[1]
-        assertEquals("2", secondServer.id)
+        assertEquals("1", secondServer.id)
         assertEquals("Another Server", secondServer.name)
         assertEquals("192.168.1.200", secondServer.ipAddress)
         assertEquals(27016, secondServer.port)
@@ -106,13 +109,12 @@ class ServerListXmlParserTest {
         val xmlString = """
             <servers>
                 <server>
-                    <id>1</id>
                     <name>Minimal Server</name>
-                    <ip>192.168.1.100</ip>
+                    <address>192.168.1.100</address>
                     <port>27015</port>
-                    <currentPlayers>5</currentPlayers>
-                    <maxPlayers>16</maxPlayers>
-                    <mapId>min_map</mapId>
+                    <current_players>5</current_players>
+                    <max_players>16</max_players>
+                    <map_id>min_map</map_id>
                     <mode>invasion</mode>
                     <version>1.0.0</version>
                 </server>
@@ -124,11 +126,11 @@ class ServerListXmlParserTest {
         assertEquals(1, servers.size)
 
         val server = servers[0]
-        assertEquals("1", server.id)
+        assertEquals("0", server.id)
         assertEquals("Minimal Server", server.name)
         assertEquals("192.168.1.100", server.ipAddress)
         assertEquals(27015, server.port)
-        assertEquals(0, server.currentPlayers) // Default value
+        assertEquals(5, server.currentPlayers)
         assertEquals(16, server.maxPlayers)
         assertEquals("min_map", server.mapId)
         assertEquals("invasion", server.mode)
@@ -145,13 +147,12 @@ class ServerListXmlParserTest {
         val xmlString = """
             <servers>
                 <server>
-                    <id>1</id>
                     <name>Invalid Numbers Server</name>
-                    <ip>192.168.1.100</ip>
+                    <address>192.168.1.100</address>
                     <port>invalid_port</port>
-                    <currentPlayers>invalid_players</currentPlayers>
-                    <maxPlayers>invalid_max_players</maxPlayers>
-                    <mapId>test_map</mapId>
+                    <current_players>invalid_players</current_players>
+                    <max_players>invalid_max_players</max_players>
+                    <map_id>test_map</map_id>
                     <mode>invasion</mode>
                     <version>1.0.0</version>
                     <bots>invalid_bots</bots>
@@ -175,13 +176,12 @@ class ServerListXmlParserTest {
         val xmlString = """
             <servers>
                 <server>
-                    <id>1</id>
                     <name>Invalid Boolean Server</name>
-                    <ip>192.168.1.100</ip>
+                    <address>192.168.1.100</address>
                     <port>27015</port>
-                    <currentPlayers>10</currentPlayers>
-                    <maxPlayers>32</maxPlayers>
-                    <mapId>test_map</mapId>
+                    <current_players>10</current_players>
+                    <max_players>32</max_players>
+                    <map_id>test_map</map_id>
                     <mode>invasion</mode>
                     <version>1.0.0</version>
                     <dedicated>not_true_or_false</dedicated>
@@ -202,13 +202,12 @@ class ServerListXmlParserTest {
         val xmlString = """
             <servers>
                 <server>
-                    <id>1</id>
                     <name>   </name>
-                    <ip>192.168.1.100</ip>
+                    <address>192.168.1.100</address>
                     <port>27015</port>
-                    <currentPlayers>10</currentPlayers>
-                    <maxPlayers>32</maxPlayers>
-                    <mapId>   </mapId>
+                    <current_players>10</current_players>
+                    <max_players>32</max_players>
+                    <map_id>   </map_id>
                     <mode>invasion</mode>
                     <version>1.0.0</version>
                     <comment>   </comment>

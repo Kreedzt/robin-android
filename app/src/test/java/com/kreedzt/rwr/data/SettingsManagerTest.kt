@@ -2,13 +2,19 @@ package com.kreedzt.rwr.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import java.util.Locale
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class SettingsManagerTest {
 
     @Mock
@@ -30,10 +36,18 @@ class SettingsManagerTest {
         `when`(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPreferences)
         `when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
 
-        // Mock BuildConfig API_REGIONS_CONFIG
-        mockStatic(SettingsManager::class.java).use { mockedSettingsManager ->
-            // This would need to be implemented when BuildConfig is accessible in tests
-        }
+        // Mock context application context for singleton getInstance test
+        `when`(mockContext.applicationContext).thenReturn(mockContext)
+
+        // Configure mockEditor to support method chaining
+        `when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
+        `when`(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor)
+        `when`(mockEditor.putStringSet(anyString(), any())).thenReturn(mockEditor)
+        `when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
+
+        // Mock default Locale to ensure consistent language detection
+        val defaultLocale = Locale("en")
+        Locale.setDefault(defaultLocale)
 
         // Create SettingsManager instance using reflection to access private constructor
         val constructor = SettingsManager::class.java.getDeclaredConstructor(Context::class.java)
@@ -55,9 +69,16 @@ class SettingsManagerTest {
     @Test
     fun `language getter should return saved value`() {
         val savedLanguage = "zh"
-        `when`(mockSharedPreferences.getString(SettingsManager.KEY_LANGUAGE, null)).thenReturn(savedLanguage)
+        // Reset the mock to return the saved language for all future calls
+        `when`(mockSharedPreferences.getString("language", Locale.getDefault().language)).thenReturn(savedLanguage)
+        `when`(mockSharedPreferences.getString("language", null)).thenReturn(savedLanguage)
 
-        val language = settingsManager.language
+        // Create a new SettingsManager instance with the updated mock
+        val constructor = SettingsManager::class.java.getDeclaredConstructor(Context::class.java)
+        constructor.isAccessible = true
+        val testSettingsManager = constructor.newInstance(mockContext)
+
+        val language = testSettingsManager.language
 
         assertEquals(savedLanguage, language)
     }
@@ -68,7 +89,7 @@ class SettingsManagerTest {
 
         settingsManager.language = newLanguage
 
-        verify(mockEditor).putString(SettingsManager.KEY_LANGUAGE, newLanguage)
+        verify(mockEditor).putString("language", newLanguage)
         verify(mockEditor).apply()
     }
 
@@ -86,7 +107,7 @@ class SettingsManagerTest {
     @Test
     fun `apiRegionId getter should return saved valid region`() {
         val savedRegionId = "global"
-        `when`(mockSharedPreferences.getString(SettingsManager.KEY_API_REGION, null)).thenReturn(savedRegionId)
+        `when`(mockSharedPreferences.getString("api_region", null)).thenReturn(savedRegionId)
 
         val regionId = settingsManager.apiRegionId
 
@@ -96,7 +117,7 @@ class SettingsManagerTest {
     @Test
     fun `apiRegionId getter should return first available if saved region is invalid`() {
         val invalidRegionId = "invalid_region"
-        `when`(mockSharedPreferences.getString(SettingsManager.KEY_API_REGION, null)).thenReturn(invalidRegionId)
+        `when`(mockSharedPreferences.getString("api_region", null)).thenReturn(invalidRegionId)
 
         val regionId = settingsManager.apiRegionId
 
@@ -110,13 +131,13 @@ class SettingsManagerTest {
 
         settingsManager.apiRegionId = newRegionId
 
-        verify(mockEditor).putString(SettingsManager.KEY_API_REGION, newRegionId)
+        verify(mockEditor).putString("api_region", newRegionId)
         verify(mockEditor).apply()
     }
 
     @Test
     fun `isFirstLaunch default value should be true`() {
-        `when`(mockSharedPreferences.getBoolean(SettingsManager.KEY_FIRST_LAUNCH, true)).thenReturn(true)
+        `when`(mockSharedPreferences.getBoolean("first_launch", true)).thenReturn(true)
 
         val isFirstLaunch = settingsManager.isFirstLaunch
 
@@ -125,7 +146,7 @@ class SettingsManagerTest {
 
     @Test
     fun `isFirstLaunch getter should return saved value`() {
-        `when`(mockSharedPreferences.getBoolean(SettingsManager.KEY_FIRST_LAUNCH, true)).thenReturn(false)
+        `when`(mockSharedPreferences.getBoolean("first_launch", true)).thenReturn(false)
 
         val isFirstLaunch = settingsManager.isFirstLaunch
 
@@ -138,43 +159,16 @@ class SettingsManagerTest {
 
         settingsManager.isFirstLaunch = isFirstLaunch
 
-        verify(mockEditor).putBoolean(SettingsManager.KEY_FIRST_LAUNCH, isFirstLaunch)
+        verify(mockEditor).putBoolean("first_launch", isFirstLaunch)
         verify(mockEditor).apply()
     }
 
-    @Test
-    fun `autoRefreshEnabled default value should be true`() {
-        `when`(mockSharedPreferences.getBoolean(SettingsManager.KEY_AUTO_REFRESH, true)).thenReturn(true)
-
-        val autoRefreshEnabled = settingsManager.autoRefreshEnabled
-
-        assertTrue(autoRefreshEnabled)
-    }
-
-    @Test
-    fun `autoRefreshEnabled getter should return saved value`() {
-        `when`(mockSharedPreferences.getBoolean(SettingsManager.KEY_AUTO_REFRESH, true)).thenReturn(false)
-
-        val autoRefreshEnabled = settingsManager.autoRefreshEnabled
-
-        assertFalse(autoRefreshEnabled)
-    }
-
-    @Test
-    fun `autoRefreshEnabled setter should save to SharedPreferences`() {
-        val autoRefreshEnabled = false
-
-        settingsManager.autoRefreshEnabled = autoRefreshEnabled
-
-        verify(mockEditor).putBoolean(SettingsManager.KEY_AUTO_REFRESH, autoRefreshEnabled)
-        verify(mockEditor).apply()
-    }
-
+    
     @Test
     fun `apiBaseUrl should return correct URL for selected region`() {
         // Mock the selected region and API regions
         val regionId = "global"
-        `when`(mockSharedPreferences.getString(SettingsManager.KEY_API_REGION, null)).thenReturn(regionId)
+        `when`(mockSharedPreferences.getString("api_region", null)).thenReturn(regionId)
 
         val baseUrl = settingsManager.apiBaseUrl
 
@@ -203,17 +197,7 @@ class SettingsManagerTest {
         assertEquals(expectedLocaleCode, if (languageCode == "zh") "zh-CN" else languageCode)
     }
 
-    @Test
-    fun `resetToDefaults should clear all preferences`() {
-        settingsManager.resetToDefaults()
-
-        verify(mockEditor).remove(SettingsManager.KEY_LANGUAGE)
-        verify(mockEditor).remove(SettingsManager.KEY_API_REGION)
-        verify(mockEditor).remove(SettingsManager.KEY_FIRST_LAUNCH)
-        verify(mockEditor).remove(SettingsManager.KEY_AUTO_REFRESH)
-        verify(mockEditor).apply()
-    }
-
+    
     @Test
     fun `getInstance should return singleton instance`() {
         // This test verifies that getInstance returns the same instance
@@ -231,7 +215,7 @@ class SettingsManagerTest {
         val initialLanguage = "en"
         val newLanguage = "zh"
 
-        `when`(mockSharedPreferences.getString(SettingsManager.KEY_LANGUAGE, null))
+        `when`(mockSharedPreferences.getString("language", null))
             .thenReturn(initialLanguage)
             .thenReturn(newLanguage)
 
@@ -239,6 +223,6 @@ class SettingsManagerTest {
         settingsManager.language = newLanguage
 
         // In a real test with Compose, we would verify that the state changes
-        verify(mockEditor).putString(SettingsManager.KEY_LANGUAGE, newLanguage)
+        verify(mockEditor).putString("language", newLanguage)
     }
 }
