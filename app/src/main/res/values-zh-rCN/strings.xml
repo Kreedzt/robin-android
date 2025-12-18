@@ -22,6 +22,9 @@
     <string name="map_preview">地图预览: %s</string>
     <string name="loading_map_image">加载地图图片中...</string>
     <string name="map_image_load_failed">地图图片加载失败</string>
+    <string name="map_image_loading_dialog">加载地图图片中...</string>
+    <string name="map_image_error_dialog">地图图片加载失败</string>
+    <string name="close_dialog">关闭</string>
 
     <!-- Server Description -->
     <string name="server_description">服务器描述</string>

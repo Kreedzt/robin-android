@@ -22,6 +22,9 @@
     <string name="map_preview">Map Preview: %s</string>
     <string name="loading_map_image">Loading map image...</string>
     <string name="map_image_load_failed">Map image failed to load</string>
+    <string name="map_image_loading_dialog">Loading map image...</string>
+    <string name="map_image_error_dialog">Map image load failed</string>
+    <string name="close_dialog">Close</string>
 
     <!-- Server Description -->
     <string name="server_description">Server Description</string>

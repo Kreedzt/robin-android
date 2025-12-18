@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
@@ -25,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import android.os.SystemClock
 import android.util.Log
+import com.kreedzt.rwr.R
 
 @Composable
 fun ImagePreview(imageUrl: String, onDismiss: () -> Unit) {
@@ -95,7 +97,7 @@ fun ImagePreview(imageUrl: String, onDismiss: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "关闭",
+                    contentDescription = stringResource(R.string.close_dialog),
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )

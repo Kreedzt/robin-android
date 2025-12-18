@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
@@ -26,6 +27,7 @@ import coil.size.Precision
 import coil.size.Size
 import android.os.SystemClock
 import android.util.Log
+import com.kreedzt.rwr.R
 
 @Composable
 fun MapImagePreview(
@@ -101,7 +103,7 @@ fun MapImagePreview(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "关闭",
+                    contentDescription = stringResource(R.string.close_dialog),
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
@@ -165,7 +167,7 @@ fun MapImagePreview(
                                         )
                                         Spacer(modifier = Modifier.height(16.dp))
                                         Text(
-                                            text = "加载地图图片中...",
+                                            text = stringResource(R.string.map_image_loading_dialog),
                                             color = Color.White,
                                             style = MaterialTheme.typography.bodyMedium
                                         )
@@ -186,7 +188,7 @@ fun MapImagePreview(
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Text(
-                                            text = "地图图片加载失败",
+                                            text = stringResource(R.string.map_image_error_dialog),
                                             color = Color.White,
                                             style = MaterialTheme.typography.bodyMedium
                                         )

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.kreedzt.rwr.data.GameServer
 
 @Composable
-fun ServerRow(server: GameServer, query: String = "") {
+fun ServerRow(server: GameServer, query: String = "", onClick: () -> Unit = {}) {
     var expanded by remember { mutableStateOf(false) }
     var showMapImage by remember { mutableStateOf(false) }
 
@@ -29,7 +29,10 @@ fun ServerRow(server: GameServer, query: String = "") {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable { expanded = !expanded },
+            .clickable {
+                onClick()
+                expanded = !expanded
+            },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
             pressedElevation = 4.dp
