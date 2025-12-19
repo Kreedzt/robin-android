@@ -44,7 +44,7 @@ object SearchHighlighter {
                 while (startIndex != -1) {
                     val endIndex = startIndex + term.length
                     matches.add(startIndex until endIndex)
-                    startIndex = lowerText.indexOf(lowerTerm, endIndex)
+                    startIndex = lowerText.indexOf(lowerTerm, startIndex + 1)
                 }
             }
 
@@ -67,10 +67,10 @@ object SearchHighlighter {
                         textDecoration = TextDecoration.Underline
                     )
                 ) {
-                    append(text.substring(range.first, range.last.coerceAtMost(text.length)))
+                    append(text.substring(range.first, range.last + 1))
                 }
 
-                lastEnd = range.last.coerceAtMost(text.length)
+                lastEnd = range.last + 1
             }
 
             // 添加剩余的普通文本

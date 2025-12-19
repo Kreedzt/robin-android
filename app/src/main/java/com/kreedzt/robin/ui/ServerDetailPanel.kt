@@ -169,7 +169,11 @@ fun ServerDetailPanel(server: GameServer, query: String = "", onViewMapImage: ()
                                 .background(MaterialTheme.colorScheme.primary)
                         )
                         Text(
-                            text = player,
+                            text = if (query.isNotEmpty()) {
+                                SearchHighlighter.getHighlightedText(player, query)
+                            } else {
+                                androidx.compose.ui.text.AnnotatedString(player)
+                            },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,

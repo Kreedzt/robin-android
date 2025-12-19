@@ -392,6 +392,62 @@ class ServerRepository(private val settingsManager: SettingsManager, private val
     }
 
     /**
+     * 在给定的本地服务器数据中进行搜索，不触发网络请求
+     * @param servers 要搜索的服务器列表
+     * @param query 搜索查询
+     * @return 搜索结果列表
+     */
+    fun searchServersInLocalData(servers: List<GameServer>, query: String): List<GameServer> {
+        if (query.isEmpty()) {
+            return servers
+        }
+
+        val searchTerms = query.trim().split("\\s+".toRegex()).filter { it.isNotEmpty() }
+
+        if (searchTerms.isEmpty()) {
+            return servers
+        }
+
+        return servers.filter { server ->
+            searchTerms.any { term ->
+                val lowerTerm = term.lowercase()
+
+                // 搜索服务器名称
+                server.name.lowercase().contains(lowerTerm) ||
+                // 搜索IP地址
+                server.ipAddress.lowercase().contains(lowerTerm) ||
+                // 搜索端口 - 精确匹配或部分匹配
+                server.port.toString() == term || server.port.toString().contains(term) ||
+                // 搜索机器人数量
+                server.bots.toString() == term || server.bots.toString().contains(term) ||
+                // 搜索国家/地区
+                server.country.lowercase().contains(lowerTerm) ||
+                // 搜索游戏模式
+                server.mode.lowercase().contains(lowerTerm) ||
+                // 搜索地图名称
+                server.mapName.lowercase().contains(lowerTerm) ||
+                // 搜索地图ID - 特别处理数字部分
+                server.mapId.lowercase().contains(lowerTerm) ||
+                extractMapNumber(server.mapId)?.contains(term) == true ||
+                // 搜索当前玩家数
+                server.currentPlayers.toString() == term || server.currentPlayers.toString().contains(term) ||
+                // 搜索最大玩家数
+                server.maxPlayers.toString() == term || server.maxPlayers.toString().contains(term) ||
+                // 搜索玩家列表
+                server.playerList.any { player -> player.lowercase().contains(lowerTerm) } ||
+                // 搜索服务器注释/描述
+                server.comment.lowercase().contains(lowerTerm) ||
+                // 搜索版本
+                server.version.lowercase().contains(lowerTerm) ||
+                // 搜索专用服务器状态
+                (if (server.dedicated) "dedicated" else "non-dedicated").contains(lowerTerm) ||
+                // 搜索Mod状态
+                (if (server.mod) "mod" else "vanilla").contains(lowerTerm)
+            }
+        }
+    }
+
+    /**
      * 从地图ID中提取数字部分
      * 例如：从 "media/packages/vanilla/maps/map3" 提取 "3"
      */

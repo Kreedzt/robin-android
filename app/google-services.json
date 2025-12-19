@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "848183034962",
+    "project_id": "robin-c1b05",
+    "storage_bucket": "robin-c1b05.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848183034962:android:fa985c4cccda5326ef4b8b",
+        "android_client_info": {
+          "package_name": "com.kreedzt.robin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4HMGXZTVUTMSTZO6MYPGJV3aiDBgoxvs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

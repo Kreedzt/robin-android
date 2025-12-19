@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -100,4 +101,13 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Firebase SDK for Google Analytics
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+
+    // Add the dependency for the Firebase SDK for Google Analytics
+    implementation("com.google.firebase:firebase-analytics")
 }

@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.kreedzt.robin.data.ApiRegionConfig
 import com.kreedzt.robin.data.GameServer
 import com.kreedzt.robin.ui.ServerRow
+import com.kreedzt.robin.ui.ServerDetailPanel
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -366,5 +367,119 @@ class RobinAndroidInstrumentedTest {
         assertEquals("https://example.com", server.url)
         assertEquals("US West", server.country)
         // lastUpdate field doesn't exist in current structure
+    }
+
+    @Test
+    fun serverDetailPanel_displaysPlayerListWithHighlight() {
+        val testServer = GameServer(
+            id = "1",
+            name = "Test Server",
+            ipAddress = "192.168.1.100",
+            port = 27015,
+            currentPlayers = 3,
+            maxPlayers = 32,
+            mapId = "test_map",
+            mapName = "test_map",
+            bots = 0,
+            country = "US",
+            timeStamp = System.currentTimeMillis() / 1000,
+            version = "1.0.0",
+            dedicated = true,
+            mod = false,
+            playerList = listOf("TestPlayer", "Alice", "Bob"),
+            comment = "A test server",
+            url = "https://example.com",
+            mode = "invasion"
+        )
+
+        composeTestRule.setContent {
+            ServerDetailPanel(
+                server = testServer,
+                query = "TestPlayer",
+                onViewMapImage = {}
+            )
+        }
+
+        // Verify player list is displayed
+        composeTestRule.onNodeWithText("TestPlayer").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Alice").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bob").assertIsDisplayed()
+
+        // Verify player count is displayed
+        composeTestRule.onNodeWithText("Online Players (3)").assertIsDisplayed()
+    }
+
+    @Test
+    fun serverDetailPanel_highlightsMatchingPlayerName() {
+        val testServer = GameServer(
+            id = "1",
+            name = "Test Server",
+            ipAddress = "192.168.1.100",
+            port = 27015,
+            currentPlayers = 2,
+            maxPlayers = 32,
+            mapId = "test_map",
+            mapName = "test_map",
+            bots = 0,
+            country = "US",
+            timeStamp = System.currentTimeMillis() / 1000,
+            version = "1.0.0",
+            dedicated = true,
+            mod = false,
+            playerList = listOf("SuperPlayer", "AnotherPlayer"),
+            comment = "A test server",
+            url = "https://example.com",
+            mode = "invasion"
+        )
+
+        composeTestRule.setContent {
+            ServerDetailPanel(
+                server = testServer,
+                query = "Super",
+                onViewMapImage = {}
+            )
+        }
+
+        // Verify the player with matching name is displayed
+        composeTestRule.onNodeWithText("SuperPlayer").assertIsDisplayed()
+        composeTestRule.onNodeWithText("AnotherPlayer").assertIsDisplayed()
+
+        // Verify player count is displayed
+        composeTestRule.onNodeWithText("Online Players (2)").assertIsDisplayed()
+    }
+
+    @Test
+    fun serverDetailPanel_displaysEmptyPlayerList() {
+        val testServer = GameServer(
+            id = "1",
+            name = "Empty Server",
+            ipAddress = "192.168.1.100",
+            port = 27015,
+            currentPlayers = 0,
+            maxPlayers = 32,
+            mapId = "test_map",
+            mapName = "test_map",
+            bots = 0,
+            country = "US",
+            timeStamp = System.currentTimeMillis() / 1000,
+            version = "1.0.0",
+            dedicated = true,
+            mod = false,
+            playerList = emptyList(),
+            comment = "An empty server",
+            url = "https://example.com",
+            mode = "invasion"
+        )
+
+        composeTestRule.setContent {
+            ServerDetailPanel(
+                server = testServer,
+                query = "any",
+                onViewMapImage = {}
+            )
+        }
+
+        // Verify player list section is not displayed when empty
+        composeTestRule.onNodeWithText("Online Players").assertDoesNotExist()
     }
 }

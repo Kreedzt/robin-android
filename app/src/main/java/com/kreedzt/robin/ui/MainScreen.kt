@@ -128,7 +128,7 @@ fun MainScreen(repository: ServerRepository? = null) {
         }
     }
 
-    // 实时防抖搜索
+    // 实时防抖搜索 - 只在本地数据进行筛选
     LaunchedEffect(Unit) {
         searchQueryFlow
             .debounce(300) // 300ms防抖延迟
@@ -141,12 +141,14 @@ fun MainScreen(repository: ServerRepository? = null) {
 
                 isSearching = true
                 try {
+                    // 只在本地数据进行搜索，不触发网络请求
                     val result = if (searchQuery.isEmpty()) {
-                        repo.getServers()
+                        // 如果搜索为空，使用当前完整的服务器列表
+                        allServers
                     } else {
-                        repo.searchServers(searchQuery)
+                        // 在现有数据中进行搜索筛选
+                        repo.searchServersInLocalData(allServers, searchQuery)
                     }
-                    allServers = result
                     servers = applyActiveFilters(result, activeFilters)
                 } catch (e: Exception) {
                     // 处理错误，可以保持之前的搜索结果
@@ -157,7 +159,7 @@ fun MainScreen(repository: ServerRepository? = null) {
     }
 
     // 自动刷新逻辑
-    LaunchedEffect(autoRefreshEnabled, activeFilters, query) {
+    LaunchedEffect(autoRefreshEnabled, activeFilters) {
         if (!autoRefreshEnabled) {
             countdownSeconds = 5
             return@LaunchedEffect
@@ -404,17 +406,27 @@ fun MainScreen(repository: ServerRepository? = null) {
                 )
             },
             onClick = {
-                if (isRefreshing) return@ExtendedFloatingActionButton
+                if (isRefreshing || isLoading) return@ExtendedFloatingActionButton
                 coroutineScope.launch {
                     isRefreshing = true
                     try {
+                        // 刷新服务器数据
                         val refreshed = repo.refreshServers()
                         allServers = refreshed
-                        servers = applyActiveFilters(refreshed, activeFilters)
+
+                        // 如果当前有搜索查询，需要重新应用搜索
+                        val filteredResult = if (query.isEmpty()) {
+                            refreshed
+                        } else {
+                            repo.searchServersInLocalData(refreshed, query)
+                        }
+
+                        servers = applyActiveFilters(filteredResult, activeFilters)
                         lastUpdateTime = System.currentTimeMillis()
                         countdownSeconds = 5
                     } catch (e: Exception) {
-                        // 处理错误
+                        // 处理错误，可以添加用户提示
+                        e.printStackTrace()
                     } finally {
                         isRefreshing = false
                     }

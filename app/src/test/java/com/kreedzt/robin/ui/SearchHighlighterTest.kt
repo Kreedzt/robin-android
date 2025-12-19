@@ -203,4 +203,69 @@ class SearchHighlighterTest {
 
         assertEquals(0, foundIndex) // "test" should be found at index 0 in "test server name"
     }
+
+    @Test
+    fun `search range calculation for three characters should be correct`() {
+        val text = "SuperPlayer"
+        val query = "Sup"
+        val lowerText = text.lowercase()
+        val lowerTerm = query.lowercase()
+
+        val startIndex = lowerText.indexOf(lowerTerm)
+        val endIndex = startIndex + query.length
+        val range = startIndex until endIndex
+
+        assertEquals(0, startIndex)
+        assertEquals(3, endIndex)
+        assertEquals(0 until 3, range)
+    }
+
+    @Test
+    fun `search range calculation for three characters in middle should be correct`() {
+        val text = "SuperPlayer"
+        val query = "Play"
+        val lowerText = text.lowercase()
+        val lowerTerm = query.lowercase()
+
+        val startIndex = lowerText.indexOf(lowerTerm)
+        val endIndex = startIndex + query.length
+        val range = startIndex until endIndex
+
+        assertEquals(5, startIndex)
+        assertEquals(9, endIndex)
+        assertEquals(5 until 9, range)
+    }
+
+    @Test
+    fun `search range calculation with substring should return correct characters`() {
+        val text = "SuperPlayer"
+        val range = 5 until 9 // "Play" - this IntRange represents positions 5, 6, 7, 8
+
+        val extracted = text.substring(range.first, range.last + 1)
+
+        assertEquals("Play", extracted)
+    }
+
+    @Test
+    fun `search range calculation with IntRange last plus one should be correct`() {
+        val text = "SuperPlayer"
+        val range = 5 until 9 // "Play" - last is 8, so last + 1 is 9
+
+        val extracted = text.substring(range.first, range.last + 1)
+
+        assertEquals("Play", extracted)
+    }
+
+    @Test
+    fun `verify substring behavior with IntRange`() {
+        val text = "SuperPlayer"
+        val range = 0 until 3 // "Sup"
+
+        // IntRange (0 until 3) means positions 0, 1, 2
+        // For substring, we need (0, 3) to get characters at positions 0, 1, 2
+        val extracted = text.substring(range.first, range.last + 1)
+
+        assertEquals("Sup", extracted)
+        assertEquals(3, extracted.length) // Should be 3 characters: S, u, p
+    }
 }
