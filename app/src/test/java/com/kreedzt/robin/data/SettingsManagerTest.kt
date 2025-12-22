@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -17,20 +18,14 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class SettingsManagerTest {
 
-    @Mock
-    private lateinit var mockContext: Context
-
-    @Mock
-    private lateinit var mockSharedPreferences: SharedPreferences
-
-    @Mock
-    private lateinit var mockEditor: SharedPreferences.Editor
+    private val mockContext: Context = mock()
+    private val mockSharedPreferences: SharedPreferences = mock()
+    private val mockEditor: SharedPreferences.Editor = mock()
 
     private lateinit var settingsManager: SettingsManager
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
 
         // Mock SharedPreferences behavior
         `when`(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPreferences)
@@ -100,8 +95,8 @@ class SettingsManagerTest {
         // Test with default API regions
         val defaultRegionId = settingsManager.apiRegionId
 
-        // Should be either "china" or "global" (first available)
-        assertTrue(defaultRegionId == "china" || defaultRegionId == "global")
+        // Should be either "local" (first available) or another configured region
+        assertTrue(defaultRegionId == "local" || defaultRegionId == "china" || defaultRegionId == "global")
     }
 
     @Test
@@ -121,8 +116,8 @@ class SettingsManagerTest {
 
         val regionId = settingsManager.apiRegionId
 
-        // Should fall back to first available region
-        assertTrue(regionId == "china" || regionId == "global")
+        // Should fall back to first available region ("local")
+        assertTrue(regionId == "local" || regionId == "china" || regionId == "global")
     }
 
     @Test

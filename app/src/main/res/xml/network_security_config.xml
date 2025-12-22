@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic for debugging and local development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Allow localhost for local development -->
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <!-- Allow local network IPs -->
+        <domain includeSubdomains="false">10.0.2.2</domain> <!-- Android emulator's host -->
+        <domain includeSubdomains="false">192.168.1.1</domain> <!-- Common local gateway -->
+    </domain-config>
+
+    <!-- Debug configuration: allow all cleartext traffic -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

@@ -8,6 +8,27 @@
     <string name="searching">Searching...</string>
     <string name="no_servers">No servers available</string>
     <string name="no_search_results">No matching servers found</string>
+
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="update_available">Update available</string>
+    <string name="mandatory_update">Mandatory update required</string>
+    <string name="download">Download</string>
+    <string name="later">Later</string>
+    <string name="update">Update</string>
+    <string name="update_dialog_title">App Update</string>
+    <string name="update_dialog_message">A new version (%1$s) is available! You currently have version %2$s.</string>
+    <string name="mandatory_update_dialog_message">A mandatory update is required. Please update to version %1$s to continue using the app.</string>
+    <string name="changelog">What\'s new:</string>
+    <string name="release_notes">Release notes:</string>
+    <string name="checking_for_update">Checking for update...</string>
+    <string name="no_update_available">You have the latest version</string>
+    <string name="current_version">Current Version</string>
+    <string name="update_status">Update Status</string>
+    <string name="check_for_updates">Check for Updates</string>
+    <string name="system_information">System Information</string>
+    <string name="links">Links</string>
+    <string name="idle">Ready</string>
     <string name="try_other_keywords">Try other keywords</string>
     <string name="all_servers">All Servers (%d)</string>
     <string name="search_results">Search Results (%d)</string>
@@ -109,6 +130,14 @@
     <string name="app_filter_official_dominance">Official Dominance</string>
     <string name="app_filter_official_mod_castling">Official Mod Castling</string>
     <string name="app_filter_official_mod_helldivers">Official Mod HellDivers</string>
+
+    <!-- GitHub Link -->
+    <string name="view_on_github">View on GitHub</string>
+
+    <!-- Update Messages -->
+    <string name="mandatory_update_message">A mandatory update is required (%1$s → %2$s)</string>
+    <string name="optional_update_message">Update available: %1$s → %2$s</string>
+    <string name="view_version_info">View Version Info</string>
 
     <!-- Disclaimer -->
     <string name="disclaimer_title">Disclaimer</string>

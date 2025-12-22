@@ -38,12 +38,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Debug build allows cleartext traffic for local development
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Release build disallows cleartext traffic by default
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
     compileOptions {
@@ -66,6 +72,7 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.10.00")
     implementation(composeBom)
@@ -80,6 +87,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.6")
+    androidTestImplementation("org.mockito:mockito-android:5.8.0")
+    androidTestImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

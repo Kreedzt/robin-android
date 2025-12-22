@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Release build: Disallow cleartext traffic by default -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+
+    <!-- Only allow specific domains with cleartext if absolutely necessary -->
+    <!-- Remove or modify this section based on production requirements -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Production domains should use HTTPS -->
+        <domain includeSubdomains="true">robin.kreedzt.com</domain>
+        <domain includeSubdomains="true">robin.kreedzt.cn</domain>
+    </domain-config>
+</network-security-config>

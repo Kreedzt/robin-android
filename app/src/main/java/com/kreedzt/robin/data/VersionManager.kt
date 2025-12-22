@@ -108,13 +108,4 @@ data class UpdateInfo(
     val downloadUrl: String? = null,
     val changelog: String? = null,
     val releaseNotes: String? = null
-) {
-    /**
-     * Gets a user-friendly update message
-     */
-    val updateMessage: String
-        get() = when {
-            isMandatory -> "A mandatory update is required (${currentVersion.displayName} → ${latestVersion.displayName})"
-            else -> "Update available: ${currentVersion.displayName} → ${latestVersion.displayName}"
-        }
-}
+)

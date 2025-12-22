@@ -8,7 +8,8 @@ data class VersionInfo(
     val minor: Int,
     val patch: Int,
     val versionCode: Int = 0,
-    val versionName: String = ""
+    val versionName: String = "",
+    val downloadUrl: String? = null
 ) {
     /**
      * Returns the version string in semver format (x.y.z)
@@ -53,9 +54,17 @@ data class VersionInfo(
     companion object {
         /**
          * Creates a VersionInfo from a semver string (x.y.z)
+         * Accepts versions with or without 'v' prefix (e.g., "1.2.3" or "v1.2.3")
          */
         fun fromString(versionString: String, versionCode: Int = 0): VersionInfo? {
-            val parts = versionString.split(".")
+            // Remove 'v' prefix if present
+            val cleanVersionString = if (versionString.startsWith("v", ignoreCase = true)) {
+                versionString.substring(1)
+            } else {
+                versionString
+            }
+
+            val parts = cleanVersionString.split(".")
             if (parts.size != 3) return null
 
             return try {

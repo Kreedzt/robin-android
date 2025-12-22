@@ -10,20 +10,16 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.junit.Assert.*
 
 @RunWith(MockitoJUnitRunner::class)
 class VersionManagerTest {
 
-    @Mock
-    private lateinit var mockContext: Context
-
-    @Mock
-    private lateinit var mockPackageManager: PackageManager
-
-    @Mock
-    private lateinit var mockPackageInfo: PackageInfo
+    private val mockContext: Context = mock()
+    private val mockPackageManager: PackageManager = mock()
+    private val mockPackageInfo: PackageInfo = mock()
 
     private lateinit var versionManager: VersionManager
 
@@ -131,7 +127,6 @@ class VersionManagerTest {
         assertFalse(result.isMandatory)
         assertEquals("1.2.3", result.currentVersion.displayName)
         assertEquals("1.2.4", result.latestVersion.displayName)
-        assertEquals("Update available: 1.2.3 → 1.2.4", result.updateMessage)
     }
 
     @Test

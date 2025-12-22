@@ -5,27 +5,20 @@ import org.junit.Assert.*
 import org.mockito.Mockito.*
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import android.content.Context
 import android.content.SharedPreferences
 import kotlinx.coroutines.test.runTest
 
 class ServerRepositoryTest {
 
-    @Mock
-    private lateinit var settingsManager: SettingsManager
-
-    @Mock
-    private lateinit var context: Context
-
-    @Mock
-    private lateinit var sharedPreferences: SharedPreferences
-
-    @Mock
-    private lateinit var editor: SharedPreferences.Editor
+    private val settingsManager: SettingsManager = mock()
+    private val context: Context = mock()
+    private val sharedPreferences: SharedPreferences = mock()
+    private val editor: SharedPreferences.Editor = mock()
 
     @org.junit.Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
 
         // Mock SharedPreferences
         `when`(context.getSharedPreferences("maps_cache", Context.MODE_PRIVATE))

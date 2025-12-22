@@ -20,6 +20,8 @@ import android.os.Build
 import com.kreedzt.robin.BuildConfig
 import com.kreedzt.robin.R
 import com.kreedzt.robin.data.SettingsManager
+import com.kreedzt.robin.data.VersionManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,12 +30,21 @@ fun SettingsScreen(
     settingsManager: SettingsManager = SettingsManager.getInstance(LocalContext.current)
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val versionManager = VersionManager.getInstance(context)
+
     var selectedLanguage by remember { mutableStateOf(settingsManager.language) }
     var selectedApiRegionId by remember { mutableStateOf(settingsManager.apiRegionId) }
     var selectedTheme by remember { mutableStateOf(settingsManager.themeMode) }
+    var currentVersion by remember { mutableStateOf<String?>(null) }
 
     // Get available API regions
     val apiRegions = remember { SettingsManager.API_REGIONS }
+
+    // Fetch current version
+    LaunchedEffect(Unit) {
+        currentVersion = versionManager.currentVersion?.displayName
+    }
 
     Scaffold(
         topBar = {
@@ -166,6 +177,37 @@ fun SettingsScreen(
                 }
             }
 
+            // 版本信息部分
+            item {
+                SettingsSection(
+                    title = stringResource(R.string.app_version),
+                    icon = Icons.Default.SystemUpdate
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.current_version) + ": " +
+                                (currentVersion ?: stringResource(R.string.loading)),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        Button(
+                            onClick = { navController.navigate("version_info") },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Version Details")
+                        }
+                    }
+                }
+            }
+
             // 关于部分
             item {
                 SettingsSection(
@@ -182,7 +224,8 @@ fun SettingsScreen(
                         )
 
                         Text(
-                            text = "${stringResource(R.string.app_version)}: 1.0.0",
+                            text = currentVersion?.let { "${stringResource(R.string.app_version)}: $it" }
+                                ?: stringResource(R.string.loading),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

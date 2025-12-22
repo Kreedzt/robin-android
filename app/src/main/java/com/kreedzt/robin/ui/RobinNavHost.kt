@@ -51,6 +51,9 @@ fun RobinNavHost(
                             }
                         )
                     }
+
+                    // 启动时检查更新
+                    StartupUpdateChecker()
                 }
             }
             composable("settings") {
@@ -58,6 +61,9 @@ fun RobinNavHost(
             }
             composable("about") {
                 AboutScreen(navController)
+            }
+            composable("version_info") {
+                VersionInfoScreen(navController)
             }
         }
     }
@@ -154,6 +160,22 @@ fun AboutScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // 版本详情按钮
+                        OutlinedButton(
+                            onClick = { navController.navigate("version_info") },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.SystemUpdate,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.view_version_info))
+                        }
+
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // 版权信息
@@ -168,10 +190,20 @@ fun AboutScreen(navController: NavController) {
                         // GitHub 链接
                         OutlinedButton(
                             onClick = {
-                                // TODO: 打开 GitHub 页面
+                                val intent = android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse("https://github.com/Kreedzt/robin-android")
+                                )
+                                navController.context.startActivity(intent)
                             }
                         ) {
-                            Text("View on GitHub")
+                            Icon(
+                                imageVector = Icons.Default.Code,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.view_on_github))
                         }
                     }
                 }
