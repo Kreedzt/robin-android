@@ -30,6 +30,7 @@ class SettingsManager private constructor(private val context: Context) {
         private const val KEY_LAST_SEARCH_QUERY = "last_search_query"
         private const val KEY_LAST_QUICK_FILTERS = "last_quick_filters"
         private const val KEY_THEME_MODE = "theme_mode"
+        private const val KEY_QUICK_FILTER_MULTI_SELECT_MODE = "quick_filter_multi_select_mode"
 
         private const val DEFAULT_LANGUAGE = "en"
         val SUPPORTED_LANGUAGES = listOf("en", "zh")
@@ -139,6 +140,13 @@ class SettingsManager private constructor(private val context: Context) {
         get() = sharedPrefs.getStringSet(KEY_LAST_QUICK_FILTERS, emptySet()) ?: emptySet()
         set(value) {
             sharedPrefs.edit().putStringSet(KEY_LAST_QUICK_FILTERS, value.toSet()).apply()
+        }
+
+    // 快捷筛选多选模式（默认关闭，即单选模式）
+    var isQuickFilterMultiSelectMode: Boolean
+        get() = sharedPrefs.getBoolean(KEY_QUICK_FILTER_MULTI_SELECT_MODE, false)
+        set(value) {
+            sharedPrefs.edit().putBoolean(KEY_QUICK_FILTER_MULTI_SELECT_MODE, value).apply()
         }
 
     // 应用语言设置

@@ -130,6 +130,7 @@
     <string name="app_filter_official_dominance">官方 PVP</string>
     <string name="app_filter_official_mod_castling">官方 Mod Castling</string>
     <string name="app_filter_official_mod_helldivers">官方 Mod 地狱潜兵</string>
+    <string name="multi_select">多选</string>
 
     <!-- GitHub Link -->
     <string name="view_on_github">在 GitHub 上查看</string>

@@ -130,6 +130,7 @@
     <string name="app_filter_official_dominance">Official Dominance</string>
     <string name="app_filter_official_mod_castling">Official Mod Castling</string>
     <string name="app_filter_official_mod_helldivers">Official Mod HellDivers</string>
+    <string name="multi_select">Multi-select</string>
 
     <!-- GitHub Link -->
     <string name="view_on_github">View on GitHub</string>

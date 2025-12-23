@@ -68,6 +68,7 @@ fun MainScreen(repository: ServerRepository? = null) {
     var lastUpdateTime by remember { mutableStateOf(0L) }
     var activeFilters by remember { mutableStateOf(initialFilters) }
     var countdownSeconds by remember { mutableStateOf(5) }
+    var isMultiSelectMode by remember { mutableStateOf(settingsManager.isQuickFilterMultiSelectMode) }
 
     // 创建搜索查询的StateFlow用于防抖处理
     val searchQueryFlow = remember { MutableStateFlow(initialQuery) }
@@ -119,6 +120,15 @@ fun MainScreen(repository: ServerRepository? = null) {
         try {
             val loaded = repo.getServers()
             allServers = loaded
+
+            // 在单选模式下，如果有多个选择，只保留第一个
+            val filtersToApply = if (!isMultiSelectMode && activeFilters.size > 1) {
+                setOf(activeFilters.first())
+            } else {
+                activeFilters
+            }
+            activeFilters = filtersToApply
+
             servers = applyActiveFilters(loaded, activeFilters)
             lastUpdateTime = System.currentTimeMillis()
         } catch (e: Exception) {
@@ -217,15 +227,46 @@ fun MainScreen(repository: ServerRepository? = null) {
         Spacer(modifier = Modifier.height(10.dp))
 
         // 快捷筛选
-        // 快捷筛选
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(
-                text = stringResource(R.string.app_quick_filters),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.app_quick_filters),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.multi_select),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Switch(
+                        checked = isMultiSelectMode,
+                        onCheckedChange = { enabled ->
+                            isMultiSelectMode = enabled
+                            settingsManager.isQuickFilterMultiSelectMode = enabled
+
+                            // 如果切换到单选模式且当前有多个选择，只保留第一个
+                            if (!enabled && activeFilters.size > 1) {
+                                val firstFilter = activeFilters.first()
+                                activeFilters = setOf(firstFilter)
+                                settingsManager.lastQuickFilters = activeFilters
+                                servers = applyActiveFilters(allServers, activeFilters)
+                            }
+                        }
+                    )
+                }
+            }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -236,9 +277,17 @@ fun MainScreen(repository: ServerRepository? = null) {
                         selected = selected,
                         onClick = {
                             activeFilters = if (selected) {
-                                activeFilters - filter.id
+                                // 取消选择
+                                emptySet()
                             } else {
-                                activeFilters + filter.id
+                                // 选择新的筛选器
+                                if (isMultiSelectMode) {
+                                    // 多选模式：添加到现有选择
+                                    activeFilters + filter.id
+                                } else {
+                                    // 单选模式：只选择这一个
+                                    setOf(filter.id)
+                                }
                             }
                             settingsManager.lastQuickFilters = activeFilters
                             servers = applyActiveFilters(allServers, activeFilters)

@@ -220,4 +220,32 @@ class SettingsManagerTest {
         // In a real test with Compose, we would verify that the state changes
         verify(mockEditor).putString("language", newLanguage)
     }
+
+    @Test
+    fun `isQuickFilterMultiSelectMode default value should be false`() {
+        `when`(mockSharedPreferences.getBoolean("quick_filter_multi_select_mode", false)).thenReturn(false)
+
+        val isMultiSelectMode = settingsManager.isQuickFilterMultiSelectMode
+
+        assertFalse(isMultiSelectMode)
+    }
+
+    @Test
+    fun `isQuickFilterMultiSelectMode getter should return saved value`() {
+        `when`(mockSharedPreferences.getBoolean("quick_filter_multi_select_mode", false)).thenReturn(true)
+
+        val isMultiSelectMode = settingsManager.isQuickFilterMultiSelectMode
+
+        assertTrue(isMultiSelectMode)
+    }
+
+    @Test
+    fun `isQuickFilterMultiSelectMode setter should save to SharedPreferences`() {
+        val isMultiSelectMode = true
+
+        settingsManager.isQuickFilterMultiSelectMode = isMultiSelectMode
+
+        verify(mockEditor).putBoolean("quick_filter_multi_select_mode", isMultiSelectMode)
+        verify(mockEditor).apply()
+    }
 }
