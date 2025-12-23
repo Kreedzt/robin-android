@@ -33,10 +33,10 @@ android {
     }
 
     // Create release signing config only if credentials are available
-    val hasSigningCredentials = !((System.getenv("KEYSTORE_FILE") ?: findProperty("KEYSTORE_FILE")).isNullOrEmpty()
-        || (System.getenv("KEYSTORE_PASSWORD") ?: findProperty("KEYSTORE_PASSWORD")).isNullOrEmpty()
-        || (System.getenv("KEY_ALIAS") ?: findProperty("KEY_ALIAS")).isNullOrEmpty()
-        || (System.getenv("KEY_PASSWORD") ?: findProperty("KEY_PASSWORD")).isNullOrEmpty())
+    val hasSigningCredentials = !((System.getenv("KEYSTORE_FILE") ?: findProperty("KEYSTORE_FILE")?.toString()).isNullOrEmpty()
+        || (System.getenv("KEYSTORE_PASSWORD") ?: findProperty("KEYSTORE_PASSWORD")?.toString()).isNullOrEmpty()
+        || (System.getenv("KEY_ALIAS") ?: findProperty("KEY_ALIAS")?.toString()).isNullOrEmpty()
+        || (System.getenv("KEY_PASSWORD") ?: findProperty("KEY_PASSWORD")?.toString()).isNullOrEmpty())
 
     val releaseSigning = if (hasSigningCredentials) {
         signingConfigs.create("release") {
