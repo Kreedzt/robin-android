@@ -194,6 +194,7 @@ fun AboutScreen(navController: NavController) {
                                     android.content.Intent.ACTION_VIEW,
                                     android.net.Uri.parse("https://github.com/Kreedzt/robin-android")
                                 )
+                                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                                 navController.context.startActivity(intent)
                             }
                         ) {

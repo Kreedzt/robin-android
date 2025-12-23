@@ -266,6 +266,7 @@ fun VersionInfoScreen(
                                 android.content.Intent.ACTION_VIEW,
                                 android.net.Uri.parse("https://github.com/Kreedzt/robin-android")
                             )
+                            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(intent)
                         },
                         modifier = Modifier.fillMaxWidth()
