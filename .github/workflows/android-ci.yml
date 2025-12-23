@@ -90,26 +90,13 @@ jobs:
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
       run: |
-        if [ -n "$KEYSTORE_BASE64" ]; then
-          echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
-          echo "KEYSTORE_FILE=$PWD/release.keystore" >> $GITHUB_ENV
-        fi
-
-    - name: Build Release APK (Unsigned)
-      if: env.KEYSTORE_BASE64 == ''
-      env:
-        API_REGIONS: ${{ secrets.API_REGIONS || 'china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球' }}
-      run: |
-        ./gradlew assembleRelease \
-          -PAPI_REGIONS="${API_REGIONS}"
+        echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+        echo "KEYSTORE_FILE=$PWD/release.keystore" >> $GITHUB_ENV
 
     - name: Build Release APK (Signed)
       if: env.KEYSTORE_BASE64 != ''
       env:
         API_REGIONS: ${{ secrets.API_REGIONS || 'china|https://robin.kreedzt.cn/|China Mainland|中国大陆;global|https://robin.kreedzt.com/|Global|全球' }}
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
         ./gradlew assembleRelease \
           -PAPI_REGIONS="${API_REGIONS}" \

@@ -32,16 +32,25 @@ android {
         buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
 
-    signingConfigs {
-        create("release") {
-            // Signing config can be provided via:
-            // 1. CI/CD: -Pandroid.injected.signing.* parameters (recommended)
-            // 2. Local: keystore.properties or gradle properties
-            storeFile = findProperty("KEYSTORE_FILE")?.let { file(it) }
-            storePassword = findProperty("KEYSTORE_PASSWORD")?.toString()
-            keyAlias = findProperty("KEY_ALIAS")?.toString()
-            keyPassword = findProperty("KEY_PASSWORD")?.toString()
+    // Create release signing config only if credentials are available
+    val hasSigningCredentials = !((System.getenv("KEYSTORE_FILE") ?: findProperty("KEYSTORE_FILE")).isNullOrEmpty()
+        || (System.getenv("KEYSTORE_PASSWORD") ?: findProperty("KEYSTORE_PASSWORD")).isNullOrEmpty()
+        || (System.getenv("KEY_ALIAS") ?: findProperty("KEY_ALIAS")).isNullOrEmpty()
+        || (System.getenv("KEY_PASSWORD") ?: findProperty("KEY_PASSWORD")).isNullOrEmpty())
+
+    val releaseSigning = if (hasSigningCredentials) {
+        signingConfigs.create("release") {
+            storeFile = System.getenv("KEYSTORE_FILE")?.let { file(it) }
+                ?: findProperty("KEYSTORE_FILE")?.let { file(it) }
+            storePassword = System.getenv("KEYSTORE_PASSWORD")?.toString()
+                ?: findProperty("KEYSTORE_PASSWORD")?.toString()
+            keyAlias = System.getenv("KEY_ALIAS")?.toString()
+                ?: findProperty("KEY_ALIAS")?.toString()
+            keyPassword = System.getenv("KEY_PASSWORD")?.toString()
+                ?: findProperty("KEY_PASSWORD")?.toString()
         }
+    } else {
+        null
     }
 
     buildFeatures {
@@ -55,7 +64,8 @@ android {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Only sign if signing config is available
+            signingConfig = releaseSigning
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
