@@ -106,7 +106,8 @@ class VersionChecker private constructor(private val context: Context) {
             }
 
             if (versionResponse != null) {
-                Log.d("VersionChecker", "API response received - Android version: ${versionResponse.android.version}")
+                val androidVersion = versionResponse.android.version ?: "null"
+                Log.d("VersionChecker", "API response received - Android version: $androidVersion")
             } else {
                 Log.w("VersionChecker", "API response is null")
             }

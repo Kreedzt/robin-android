@@ -32,6 +32,18 @@ android {
         buildConfigField("String", "API_REGIONS_CONFIG", "\"${apiRegionsConfig.replace("\"", "\\\"")}\"")
     }
 
+    signingConfigs {
+        create("release") {
+            // Signing config can be provided via:
+            // 1. CI/CD: -Pandroid.injected.signing.* parameters (recommended)
+            // 2. Local: keystore.properties or gradle properties
+            storeFile = findProperty("KEYSTORE_FILE")?.let { file(it) }
+            storePassword = findProperty("KEYSTORE_PASSWORD")?.toString()
+            keyAlias = findProperty("KEY_ALIAS")?.toString()
+            keyPassword = findProperty("KEY_PASSWORD")?.toString()
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -43,6 +55,7 @@ android {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

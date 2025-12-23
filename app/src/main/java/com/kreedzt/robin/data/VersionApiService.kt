@@ -38,7 +38,9 @@ class VersionApiService private constructor(
                         Log.d(TAG, "Response body: $responseBody")
                         try {
                             val versionResponse = json.decodeFromString<VersionApiResponse>(responseBody)
-                            Log.d(TAG, "Parsed version response - Android: ${versionResponse.android.version}, URL: ${versionResponse.android.url}")
+                            val androidVersion = versionResponse.android.version ?: "null"
+                            val androidUrl = versionResponse.android.url ?: "null"
+                            Log.d(TAG, "Parsed version response - Android: $androidVersion, URL: $androidUrl")
                             Result.success(versionResponse)
                         } catch (e: Exception) {
                             Log.e(TAG, "Failed to parse JSON response", e)

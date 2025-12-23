@@ -242,4 +242,173 @@ class VersionApiServiceTest {
         // Then - should return the same instance since singleton is already created
         assertSame(instance1, instance2)
     }
+
+    // ========== Tests for null android.version and android.url scenarios ==========
+
+    @Test
+    fun `fetchVersionInfo_returns_success_when_android_version_is_null`() = runTest {
+        // Given - backend response with null android.version and android.url
+        val nullVersionResponse = """
+            {
+                "android": {
+                    "version": null,
+                    "url": null
+                },
+                "web": {
+                    "version": "2.0.0",
+                    "url": "https://example.com/web"
+                }
+            }
+        """.trimIndent()
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody(nullVersionResponse)
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+        )
+
+        // When
+        val result = versionApiService.fetchVersionInfo(mockWebServer.url("/").toString())
+
+        // Then - should successfully parse, not throw exception
+        assertTrue(result.isSuccess)
+        val versionResponse = result.getOrNull()
+        assertNotNull(versionResponse)
+        assertNull(versionResponse?.android?.version)
+        assertNull(versionResponse?.android?.url)
+    }
+
+    @Test
+    fun `fetchVersionInfo_returns_success_when_android_version_is_empty_string`() = runTest {
+        // Given - backend response with empty string for version
+        val emptyVersionResponse = """
+            {
+                "android": {
+                    "version": "",
+                    "url": "https://example.com/download.apk"
+                },
+                "web": {
+                    "version": "2.0.0",
+                    "url": "https://example.com/web"
+                }
+            }
+        """.trimIndent()
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody(emptyVersionResponse)
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+        )
+
+        // When
+        val result = versionApiService.fetchVersionInfo(mockWebServer.url("/").toString())
+
+        // Then
+        assertTrue(result.isSuccess)
+        val versionResponse = result.getOrNull()
+        assertNotNull(versionResponse)
+        assertEquals("", versionResponse?.android?.version)
+        assertEquals("https://example.com/download.apk", versionResponse?.android?.url)
+    }
+
+    @Test
+    fun `fetchVersionInfo_returns_success_when_android_url_is_null`() = runTest {
+        // Given - backend response with null url but valid version
+        val nullUrlResponse = """
+            {
+                "android": {
+                    "version": "1.5.0",
+                    "url": null
+                },
+                "web": {
+                    "version": "2.0.0",
+                    "url": "https://example.com/web"
+                }
+            }
+        """.trimIndent()
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody(nullUrlResponse)
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+        )
+
+        // When
+        val result = versionApiService.fetchVersionInfo(mockWebServer.url("/").toString())
+
+        // Then
+        assertTrue(result.isSuccess)
+        val versionResponse = result.getOrNull()
+        assertNotNull(versionResponse)
+        assertEquals("1.5.0", versionResponse?.android?.version)
+        assertNull(versionResponse?.android?.url)
+    }
+
+    @Test
+    fun `fetchVersionInfo_returns_success_when_android_fields_are_missing`() = runTest {
+        // Given - backend response with empty android object
+        val missingFieldsResponse = """
+            {
+                "android": {},
+                "web": {
+                    "version": "2.0.0",
+                    "url": "https://example.com/web"
+                }
+            }
+        """.trimIndent()
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody(missingFieldsResponse)
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+        )
+
+        // When
+        val result = versionApiService.fetchVersionInfo(mockWebServer.url("/").toString())
+
+        // Then - should use default null values
+        assertTrue(result.isSuccess)
+        val versionResponse = result.getOrNull()
+        assertNotNull(versionResponse)
+        assertNull(versionResponse?.android?.version)
+        assertNull(versionResponse?.android?.url)
+    }
+
+    @Test
+    fun `fetchVersionInfo_toUpdateInfo_returns_null_when_android_version_is_null`() = runTest {
+        // Given - simulating the full flow: API response -> toUpdateInfo
+        val nullVersionResponse = """
+            {
+                "android": {
+                    "version": null,
+                    "url": null
+                },
+                "web": {
+                    "version": "2.0.0",
+                    "url": "https://example.com/web"
+                }
+            }
+        """.trimIndent()
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody(nullVersionResponse)
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+        )
+
+        // When
+        val result = versionApiService.fetchVersionInfo(mockWebServer.url("/").toString())
+        val versionResponse = result.getOrNull()
+        val currentVersion = VersionInfo(major = 1, minor = 0, patch = 0, versionName = "1.0.0")
+        val updateInfo = versionResponse?.toUpdateInfo(currentVersion)
+
+        // Then - no update available when version is null
+        assertNotNull(versionResponse)
+        assertNull(updateInfo)
+    }
 }
